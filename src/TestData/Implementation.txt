@@ -1,0 +1,2 @@
+1. Create a function to enter pass/fail in test suite sheet. Add all the pass fail result of each test step into an array and then write fail or pass.
+2. To configure extent report >> write test.logstatus after executescreenshot() with if else along with capture screenshot.
