@@ -6,7 +6,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.apache.log4j.Logger;
+
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+import Utility.TestConfig;
+import Utility.ZipFile;
 
 public class DriverScript {
 
@@ -17,6 +27,7 @@ public class DriverScript {
 	public static int testModuleID;
 	public static String currentTestModuleExcelKey;
 	public static String currentTestModuleID;
+	public static String currentTestModuleName;
 
 	// suite.xlsx
 	public Xls_Reader suiteXLS;
@@ -42,23 +53,40 @@ public class DriverScript {
 	public static Properties CONFIG;
 	public static Properties EXCEL_PATH;
 
+	ExtentTest test;
+	static ExtentReports extent;
+
+	
+
 	public DriverScript() throws NoSuchMethodException, SecurityException {
 		keywords = new Keywords();
 		method = keywords.getClass().getMethods();
 		capturescreenShot_method = keywords.getClass().getMethod("captureScreenshot", String.class, String.class);
-		
-		
+
 	}
 
 	public static void main(String[] args) throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, IOException, NoSuchMethodException, SecurityException {
+			InvocationTargetException, IOException, NoSuchMethodException, SecurityException, AddressException, MessagingException {
 		PropertyLoader propertyLoader = new PropertyLoader();
 		OR = propertyLoader.getOR();
 		CONFIG = propertyLoader.getCONFIG();
 		EXCEL_PATH = propertyLoader.getEXCEL_PATH();
+		
+		
 
+		extent = new ExtentReports(System.getProperty("user.dir")+"/test-output/ExtentReport.html",true);
+		//Informaition you want to give about you, your project, and anything else
+				extent.addSystemInfo("Host Name", "Aman Mehndiratta")
+				.addSystemInfo("Environment", "QA")
+				.addSystemInfo("User Name", "Aman");
+		
 		DriverScript test = new DriverScript();
 		test.start();
+		
+		extent.flush(); 
+		extent.close();
+		ZipFile.zip("E:\\Selenium\\Workspace\\TestProjectHybrid\\test-output");
+		//TestConfig.mailSender();
 	}
 
 	public void start() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -86,12 +114,18 @@ public class DriverScript {
 			currentTestModuleID = automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET,
 					Constants.Test_Module_ID, testModuleID);
 
+			currentTestModuleName = automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Module Name",
+					testModuleID);
+
 			currentTestModuleExcelKey = automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET,
 					Constants.Test_Module_Excel_Key, testModuleID);
 
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
 
+				//extent = new ExtentReports(System.getProperty("user.dir")+"/test-output/ExtentReport.html",true);
+				
+				
 				APP_LOGS.debug("Executing Module " + currentTestModuleExcelKey);
 				APP_LOGS.debug("Properties loaded. Starting testing");
 				APP_LOGS.debug("Intialize Suite xlsx");
@@ -115,6 +149,11 @@ public class DriverScript {
 					// checking the runmode of the current test suite id in
 					if (suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.RUNMODE, currentSuiteID)
 							.equals(Constants.RUNMODE_YES)) {
+						
+						//starting test for extent report
+						test = extent.startTest(
+								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
+								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
 
 						// printing the test suite which is being executing
 						APP_LOGS.debug("******Executing the Suite******" + suiteXLS
@@ -139,17 +178,24 @@ public class DriverScript {
 							// running executeKeyword function
 							executeKeywords();
 
-							createXLSReport();
+							// createXLSReport();
 
 						} else {
 
 							resultSet = new ArrayList<String>();
 							executeKeywords();
-							createXLSReport();
+							// createXLSReport();
 						}
+					} else {
+						test = extent.startTest(
+								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
+								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
+						test.log(LogStatus.SKIP, "Test Suite Skipped -- "
+								+ suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID));
 					}
-
+					extent.endTest(test);
 				}
+
 			}
 		}
 	}
@@ -212,13 +258,26 @@ public class DriverScript {
 										currentTestModuleID + "_" + currentTestSuite + "_" + "_TS"
 												+ (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
 										keyword_execution_result);
+
+								test.log(LogStatus.FAIL,
+										keyword_execution_result + test.addScreenCapture(
+												System.getProperty("user.dir") + "//screenshots//" + currentTestModuleID
+														+ "_" + currentTestSuite + "_" + "_TS" + (currentTestStepID - 1)
+														+ "_" + (currentTestDataSetID - 1) + ".jpg"));
+
+							} else {
+								test.log(LogStatus.PASS, keyword_execution_result);
 							}
 
 						}
 					}
+				} else {
+					test.log(LogStatus.SKIP, currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET,
+							"Test Step Desc", currentTestStepID));
 				}
 			}
 		}
+
 	}
 
 	public void createXLSReport() {

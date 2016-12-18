@@ -18,8 +18,8 @@ public class Constants {
 	public static String TCID="TSID";
 	public static String TEST_STEPS_SHEET="TestSteps";
 	public static String KEYWORD="Keyword";
-	public static String KEYWORD_PASS="PASS";
-	public static String KEYWORD_FAIL="FAIL";
+	public static String KEYWORD_PASS="Pass";
+	public static String KEYWORD_FAIL="Fail";
 	public static String RESULT="Result";
 	public static String KEYWORD_SKIP="SKIP";
 	public static String DATA="Data";

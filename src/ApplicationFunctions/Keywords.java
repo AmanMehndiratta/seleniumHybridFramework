@@ -41,7 +41,7 @@ public class Keywords {
 
 		long implicitWaitTime = Long.parseLong(CONFIG.getProperty("implicitwait"));
 		driver.manage().timeouts().implicitlyWait(implicitWaitTime, TimeUnit.SECONDS);
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Browser Opened";
 
 	}
 
@@ -53,7 +53,7 @@ public class Keywords {
 		} catch (Exception e) {
 			return Constants.KEYWORD_FAIL + " -- Not able to navigate";
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Navigate to url";
 	}
 
 	// to click on a link
@@ -65,7 +65,7 @@ public class Keywords {
 			return Constants.KEYWORD_FAIL + " -- Not able to click on link" + e.getMessage();
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Clicked on link";
 	}
 
 	// to click on a link - link text
@@ -73,7 +73,7 @@ public class Keywords {
 		APP_LOGS.debug("Clicking on link ");
 		driver.findElement(By.linkText(OR.getProperty(object))).click();
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Clicked on link";
 	}
 
 	// to verify link text
@@ -84,7 +84,7 @@ public class Keywords {
 			String expected = data;
 
 			if (actual.equals(expected))
-				return Constants.KEYWORD_PASS;
+				return Constants.KEYWORD_PASS + " -- Link text verified - "+data;
 			else
 				return Constants.KEYWORD_FAIL + " -- Link text not verified";
 
@@ -104,7 +104,7 @@ public class Keywords {
 			return Constants.KEYWORD_FAIL + " -- Not able to click on Button" + e.getMessage();
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Button Clicked";
 	}
 
 	// to verify button text
@@ -115,7 +115,7 @@ public class Keywords {
 			String expected = data;
 
 			if (actual.equals(expected))
-				return Constants.KEYWORD_PASS;
+				return Constants.KEYWORD_PASS + " -- Button text verified";
 			else
 				return Constants.KEYWORD_FAIL + " -- Button text not verified " + actual + " -- " + expected;
 		} catch (Exception e) {
@@ -145,7 +145,7 @@ public class Keywords {
 
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- List Selected";
 	}
 
 	// to verify all list elements
@@ -172,7 +172,7 @@ public class Keywords {
 
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- List elements verified";
 	}
 
 	// to verify list selection
@@ -197,7 +197,7 @@ public class Keywords {
 			return Constants.KEYWORD_FAIL + " - Could not find list. " + e.getMessage();
 
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- List elements verified";
 
 	}
 
@@ -212,7 +212,7 @@ public class Keywords {
 
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Radio button selected";
 
 	}
 
@@ -230,7 +230,7 @@ public class Keywords {
 			return Constants.KEYWORD_FAIL + "- Not able to find radio button";
 
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Waited for page load";
 	}
 
 	// select dropdown value
@@ -279,7 +279,7 @@ public class Keywords {
 
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Verified Radio Button Selected";
 
 	}
 
@@ -294,7 +294,7 @@ public class Keywords {
 		} catch (Exception e) {
 			return Constants.KEYWORD_FAIL + " - Could not find checkbo";
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- CheckBox selection checked";
 
 	}
 
@@ -308,7 +308,7 @@ public class Keywords {
 		} catch (Exception e) {
 			return Constants.KEYWORD_FAIL + " - Could not find checkbox";
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Checkbox Unchecked";
 
 	}
 
@@ -318,7 +318,7 @@ public class Keywords {
 		try {
 			String checked = driver.findElement(By.xpath(OR.getProperty(object))).getAttribute("checked");
 			if (checked != null)
-				return Constants.KEYWORD_PASS;
+				return Constants.KEYWORD_PASS + " -- Checkbox selection checked";
 			else
 				return Constants.KEYWORD_FAIL + " - Not selected";
 
@@ -337,7 +337,7 @@ public class Keywords {
 			String expected = data;
 
 			if (actual.equals(expected))
-				return Constants.KEYWORD_PASS;
+				return Constants.KEYWORD_PASS + " -- Verified Text - "+data;
 			else
 				return Constants.KEYWORD_FAIL + " -- text not verified " + actual + " -- " + expected;
 		} catch (Exception e) {
@@ -356,7 +356,7 @@ public class Keywords {
 			return Constants.KEYWORD_FAIL + " Unable to write " + e.getMessage();
 
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Wrote in input field";
 
 	}
 
@@ -367,7 +367,7 @@ public class Keywords {
 			String expected = data;
 
 			if (actual.equals(expected)) {
-				return Constants.KEYWORD_PASS;
+				return Constants.KEYWORD_PASS + " -- Text in Input Verified";
 			} else {
 				return Constants.KEYWORD_FAIL + " Not matching ";
 			}
@@ -398,7 +398,7 @@ public class Keywords {
 			String actualTitle = driver.getTitle();
 			String expectedTitle = data;
 			if (actualTitle.equals(expectedTitle))
-				return Constants.KEYWORD_PASS;
+				return Constants.KEYWORD_PASS + "Title Verified" + actualTitle;
 			else
 				return Constants.KEYWORD_FAIL + " -- Title not verified " + expectedTitle + " -- " + actualTitle;
 		} catch (Exception e) {
@@ -414,7 +414,7 @@ public class Keywords {
 			return Constants.KEYWORD_FAIL + " Object doest not exist";
 		}
 
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Element Exists";
 	}
 
 	public String click(String object, String data) {
@@ -424,7 +424,7 @@ public class Keywords {
 		} catch (Exception e) {
 			return Constants.KEYWORD_FAIL + " Not able to click";
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Clicked on Element";
 	}
 
 	public String synchronize(String object, String data) {
@@ -451,7 +451,7 @@ public class Keywords {
 		} catch (Exception e) {
 			return Constants.KEYWORD_FAIL + "Unable to close browser. Check if its open" + e.getMessage();
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Waited for element visibility";
 	}
 
 	public String closeBroswer(String object, String data) {
@@ -461,14 +461,14 @@ public class Keywords {
 		} catch (Exception e) {
 			return Constants.KEYWORD_FAIL + "Unable to close browser. Check if its open" + e.getMessage();
 		}
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Browser Closed";
 
 	}
 
 	public String pause(String object, String data) throws NumberFormatException, InterruptedException {
 		long time = (long) Double.parseDouble(object);
 		Thread.sleep(time * 1000L);
-		return Constants.KEYWORD_PASS;
+		return Constants.KEYWORD_PASS + " -- Static Pause" ;
 	}
 
 	/************************
