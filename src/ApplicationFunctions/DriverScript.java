@@ -65,7 +65,7 @@ public class DriverScript {
 	// Extent Report
 	ExtentXReporter extentx;
 	ExtentTest test;
-	ExtentReports extent = new ExtentReports();
+	
 
 	public DriverScript() throws NoSuchMethodException, SecurityException {
 		keywords = new Keywords();
@@ -123,6 +123,8 @@ public class DriverScript {
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
 				
+				//creating object here for preventing appending previous of report into new report
+				ExtentReports extent = new ExtentReports();
 				//initializing report with path and appending info
 				ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(System.getProperty("user.dir")+"\\test-output\\"+currentTestModuleName + ".html");
 				extent.attachReporter(htmlReporter);
@@ -219,15 +221,19 @@ public class DriverScript {
 						test.assignAuthor(automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
 						test.log(Status.SKIP, "Test Suite Skipped -- "
 								+ suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID));
-
+						
 					}
 					//extent.flush();
 				}
+				//pushing result to report
+				extent.flush();
 				
+				//making it null to prevent data of previous modules from appending into new module report
+				test=null;
 			}
 			
 
-		}extent.flush();
+		}
 	}
 
 	public void executeKeywords() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
