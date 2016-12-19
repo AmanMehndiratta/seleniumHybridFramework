@@ -12,9 +12,17 @@ import javax.mail.internet.AddressException;
 
 import org.apache.log4j.Logger;
 
-import com.relevantcodes.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+import com.aventstack.extentreports.reporter.ExtentXReporter;
+import com.aventstack.extentreports.reporter.configuration.ChartLocation;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+
+/*import com.relevantcodes.extentreports.ExtentReports;
 import com.relevantcodes.extentreports.ExtentTest;
-import com.relevantcodes.extentreports.LogStatus;
+import com.relevantcodes.extentreports.LogStatus;*/
 
 import Utility.TestConfig;
 import Utility.ZipFile;
@@ -54,11 +62,10 @@ public class DriverScript {
 	public static Properties CONFIG;
 	public static Properties EXCEL_PATH;
 
-	//Extent Report
+	// Extent Report
+	ExtentXReporter extentx;
 	ExtentTest test;
-	static ExtentReports extent;
-
-	
+	ExtentReports extent = new ExtentReports();
 
 	public DriverScript() throws NoSuchMethodException, SecurityException {
 		keywords = new Keywords();
@@ -67,27 +74,23 @@ public class DriverScript {
 
 	}
 
-	public static void main(String[] args) throws IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, IOException, NoSuchMethodException, SecurityException, AddressException, MessagingException {
+	public static void main(String[] args)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException,
+			NoSuchMethodException, SecurityException, AddressException, MessagingException {
 		PropertyLoader propertyLoader = new PropertyLoader();
 		OR = propertyLoader.getOR();
 		CONFIG = propertyLoader.getCONFIG();
 		EXCEL_PATH = propertyLoader.getEXCEL_PATH();
-		
-		
 
-		
-		
-		
 		DriverScript test = new DriverScript();
 		test.start();
-		
-		ZipFile.zip("E:\\Selenium\\Workspace\\TestProjectHybrid\\test-output");
-		//TestConfig.mailSender();
+
+		//ZipFile.zip("E:\\Selenium\\Workspace\\TestProjectHybrid\\test-output");
+		// TestConfig.mailSender();
 	}
 
 	public void start() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
+			NoSuchMethodException, SecurityException, IOException {
 		// initialize the app logs
 		APP_LOGS = Logger.getLogger("devpinoyLogger");
 		APP_LOGS.debug("Hello");
@@ -120,16 +123,27 @@ public class DriverScript {
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
 				
-				//Generating Extent Report for each module with runmode Yes
-				extent = new ExtentReports(System.getProperty("user.dir")+"\\test-output\\"+currentTestModuleName+".html",false);
+				//initializing report with path and appending info
+				ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(System.getProperty("user.dir")+"\\test-output\\"+currentTestModuleName + ".html");
+				extent.attachReporter(htmlReporter);
+				htmlReporter.setAppendExisting(false);
+				
+				//report configuration 
+				htmlReporter.config().setDocumentTitle("Clove Dental :)");
+				htmlReporter.config().setReportName("PRM Automation");
+				htmlReporter.config().setTestViewChartLocation(ChartLocation.TOP);
+				htmlReporter.config().setTheme(Theme.STANDARD);
 				
 				
-				//Informaition you want to give about you, your project, and anything else
-						extent.addSystemInfo("Host Name", automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "HostName", 2))
-						.addSystemInfo("Environment", automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "Environment", 2))
-						.addSystemInfo("User Name", automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "UserName", 2));
 				
-				
+				//adding info about the report
+				extent.setSystemInfo("Host Name",
+						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "HostName", 2));
+				extent.setSystemInfo("Environment",
+						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "Environment", 2));
+				extent.setSystemInfo("User Name",
+						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "UserName", 2));
+
 				APP_LOGS.debug("Executing Module " + currentTestModuleExcelKey);
 				APP_LOGS.debug("Properties loaded. Starting testing");
 				APP_LOGS.debug("Intialize Suite xlsx");
@@ -153,18 +167,16 @@ public class DriverScript {
 					// checking the runmode of the current test suite id in
 					if (suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.RUNMODE, currentSuiteID)
 							.equals(Constants.RUNMODE_YES)) {
-						
-						//starting test for extent report
-						test = extent.startTest(
+
+						// starting test for extent report
+						test = extent.createTest(
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
+
 						
-						//Loading config.xml
-						extent.loadConfig(new File(System.getProperty("user.dir")+"\\src\\logs\\extent-config.xml"));
-						
-						//assigning category to the test suite
+						// assigning category to the test suite
 						test.assignCategory(currentTestModuleName);
-						test.assignAuthor("Aman Mehndiratta");
+						test.assignAuthor(automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
 
 						// printing the test suite which is being executing
 						APP_LOGS.debug("******Executing the Suite******" + suiteXLS
@@ -198,24 +210,28 @@ public class DriverScript {
 							// createXLSReport();
 						}
 					} else {
-						test = extent.startTest(
+						
+						//creating entry in report for skipped tests 
+						test = extent.createTest(
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
-						test.log(LogStatus.SKIP, "Test Suite Skipped -- "
+						test.assignCategory(currentTestModuleName);
+						test.assignAuthor(automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
+						test.log(Status.SKIP, "Test Suite Skipped -- "
 								+ suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID));
-						
-					}
-					extent.endTest(test);
-				}
 
+					}
+					//extent.flush();
+				}
+				
 			}
-			extent.flush(); 
-			extent.close();
-		}
+			
+
+		}extent.flush();
 	}
 
 	public void executeKeywords() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException {
+			NoSuchMethodException, SecurityException, IOException {
 
 		// getting the total row count of testCaseSheet
 		for (currentTestStepID = 2; currentTestStepID <= currentTestSuiteXLS
@@ -272,22 +288,24 @@ public class DriverScript {
 										currentTestModuleID + "_" + currentTestSuite + "_" + "_TS"
 												+ (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
 										keyword_execution_result);
-
-								test.log(LogStatus.FAIL,
-										keyword_execution_result + test.addScreenCapture(
+								
+								//adding screenshot if test fails
+								test.log(Status.FAIL,
+										keyword_execution_result + test.addScreenCaptureFromPath(
 												System.getProperty("user.dir") + "//screenshots//" + currentTestModuleID
 														+ "_" + currentTestSuite + "_" + "_TS" + (currentTestStepID - 1)
 														+ "_" + (currentTestDataSetID - 1) + ".jpg"));
 
 							} else {
-								test.log(LogStatus.PASS, keyword_execution_result);
+								test.log(Status.PASS, keyword_execution_result);
 							}
 
 						}
 					}
 				} else {
-					test.log(LogStatus.SKIP, currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET,
-							"Test Step Desc", currentTestStepID));
+					//creating enty in report for skipped test step
+					test.log(Status.SKIP, currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, "Test Step Desc",
+							currentTestStepID));
 				}
 			}
 		}
