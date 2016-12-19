@@ -5,6 +5,7 @@ public class Constants {
 	//module excel
 	public static String PRM_Test_Module_Excel = System.getProperty("user.dir")+"\\src\\TestData\\Automation_Module_Driver_Excel.xlsx";
 	public static String TEST_MODULE_SHEET = "AutomationModules";
+	public static String Test_INFO_SHEET = "Info";
 	public static String Test_Module_ID = "TMID";
 	public static String Test_Module_Excel_Key = "EXCEL_KEY";
 	

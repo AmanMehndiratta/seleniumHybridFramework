@@ -1,5 +1,6 @@
 package ApplicationFunctions;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,6 +54,7 @@ public class DriverScript {
 	public static Properties CONFIG;
 	public static Properties EXCEL_PATH;
 
+	//Extent Report
 	ExtentTest test;
 	static ExtentReports extent;
 
@@ -74,17 +76,12 @@ public class DriverScript {
 		
 		
 
-		extent = new ExtentReports(System.getProperty("user.dir")+"/test-output/ExtentReport.html",true);
-		//Informaition you want to give about you, your project, and anything else
-				extent.addSystemInfo("Host Name", "Aman Mehndiratta")
-				.addSystemInfo("Environment", "QA")
-				.addSystemInfo("User Name", "Aman");
+		
+		
 		
 		DriverScript test = new DriverScript();
 		test.start();
 		
-		extent.flush(); 
-		extent.close();
 		ZipFile.zip("E:\\Selenium\\Workspace\\TestProjectHybrid\\test-output");
 		//TestConfig.mailSender();
 	}
@@ -122,8 +119,15 @@ public class DriverScript {
 
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
-
-				//extent = new ExtentReports(System.getProperty("user.dir")+"/test-output/ExtentReport.html",true);
+				
+				//Generating Extent Report for each module with runmode Yes
+				extent = new ExtentReports(System.getProperty("user.dir")+"\\test-output\\"+currentTestModuleName+".html",false);
+				
+				
+				//Informaition you want to give about you, your project, and anything else
+						extent.addSystemInfo("Host Name", automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "HostName", 2))
+						.addSystemInfo("Environment", automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "Environment", 2))
+						.addSystemInfo("User Name", automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "UserName", 2));
 				
 				
 				APP_LOGS.debug("Executing Module " + currentTestModuleExcelKey);
@@ -154,6 +158,13 @@ public class DriverScript {
 						test = extent.startTest(
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
+						
+						//Loading config.xml
+						extent.loadConfig(new File(System.getProperty("user.dir")+"\\src\\logs\\extent-config.xml"));
+						
+						//assigning category to the test suite
+						test.assignCategory(currentTestModuleName);
+						test.assignAuthor("Aman Mehndiratta");
 
 						// printing the test suite which is being executing
 						APP_LOGS.debug("******Executing the Suite******" + suiteXLS
@@ -192,11 +203,14 @@ public class DriverScript {
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
 						test.log(LogStatus.SKIP, "Test Suite Skipped -- "
 								+ suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID));
+						
 					}
 					extent.endTest(test);
 				}
 
 			}
+			extent.flush(); 
+			extent.close();
 		}
 	}
 
