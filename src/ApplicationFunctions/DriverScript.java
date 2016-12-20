@@ -1,5 +1,7 @@
 package ApplicationFunctions;
 
+import Constants.Constants;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -50,10 +52,14 @@ public class DriverScript {
 	public static int currentTestStepID;
 	public static String currentKeyword;
 	public static int currentTestDataSetID = 2;
-	public static Method method[];
+	public static Method methodKeywords[];
+	public static Method methodPrerequisites[];
+	public static Method methodApplicationSpecific[];
 	public static Method capturescreenShot_method;
 
 	public static Keywords keywords;
+	public static Prerequisites prerequisites;
+	public static ApplicationSpecific applicationSpecific;
 	public static String keyword_execution_result;
 	public static ArrayList<String> resultSet;
 	public static String data;
@@ -65,13 +71,19 @@ public class DriverScript {
 	// Extent Report
 	ExtentXReporter extentx;
 	ExtentTest test;
-	
 
 	public DriverScript() throws NoSuchMethodException, SecurityException {
 		keywords = new Keywords();
-		method = keywords.getClass().getMethods();
-		capturescreenShot_method = keywords.getClass().getMethod("captureScreenshot", String.class, String.class);
+		prerequisites = new Prerequisites();
+		applicationSpecific = new ApplicationSpecific();
 
+		methodKeywords = keywords.getClass().getMethods();
+		//methodPrerequisites = methodPrerequisites.getClass().getMethods();
+		//methodApplicationSpecific = methodApplicationSpecific.getClass().getMethods();
+
+		capturescreenShot_method = keywords.getClass().getMethod("captureScreenshot", String.class, String.class);
+		//capturescreenShot_method = prerequisites.getClass().getMethod("captureScreenshot", String.class, String.class);
+		//capturescreenShot_method = methodApplicationSpecific.getClass().getMethod("captureScreenshot", String.class,String.class);
 	}
 
 	public static void main(String[] args)
@@ -85,7 +97,7 @@ public class DriverScript {
 		DriverScript test = new DriverScript();
 		test.start();
 
-		//ZipFile.zip("E:\\Selenium\\Workspace\\TestProjectHybrid\\test-output");
+		// ZipFile.zip("E:\\Selenium\\Workspace\\TestProjectHybrid\\test-output");
 		// TestConfig.mailSender();
 	}
 
@@ -122,23 +134,23 @@ public class DriverScript {
 
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
-				
-				//creating object here for preventing appending previous of report into new report
+
+				// creating object here for preventing appending previous of
+				// report into new report
 				ExtentReports extent = new ExtentReports();
-				//initializing report with path and appending info
-				ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(System.getProperty("user.dir")+"\\test-output\\"+currentTestModuleName + ".html");
+				// initializing report with path and appending info
+				ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(
+						System.getProperty("user.dir") + "\\test-output\\" + currentTestModuleName + ".html");
 				extent.attachReporter(htmlReporter);
 				htmlReporter.setAppendExisting(false);
-				
-				//report configuration 
+
+				// report configuration
 				htmlReporter.config().setDocumentTitle("Clove Dental :)");
 				htmlReporter.config().setReportName("PRM Automation");
 				htmlReporter.config().setTestViewChartLocation(ChartLocation.TOP);
 				htmlReporter.config().setTheme(Theme.STANDARD);
-				
-				
-				
-				//adding info about the report
+
+				// adding info about the report
 				extent.setSystemInfo("Host Name",
 						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "HostName", 2));
 				extent.setSystemInfo("Environment",
@@ -175,10 +187,10 @@ public class DriverScript {
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
 
-						
 						// assigning category to the test suite
 						test.assignCategory(currentTestModuleName);
-						test.assignAuthor(automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
+						test.assignAuthor(
+								automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
 
 						// printing the test suite which is being executing
 						APP_LOGS.debug("******Executing the Suite******" + suiteXLS
@@ -201,42 +213,42 @@ public class DriverScript {
 							APP_LOGS.debug("Iteration number " + (currentTestDataSetID - 1));
 
 							// running executeKeyword function
-							executeKeywords();
+							processKeywords();
 
 							// createXLSReport();
 
 						} else {
 
 							resultSet = new ArrayList<String>();
-							executeKeywords();
+							processKeywords();
 							// createXLSReport();
 						}
 					} else {
-						
-						//creating entry in report for skipped tests 
+
+						// creating entry in report for skipped tests
 						test = extent.createTest(
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
 								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
 						test.assignCategory(currentTestModuleName);
-						test.assignAuthor(automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
+						test.assignAuthor(
+								automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
 						test.log(Status.SKIP, "Test Suite Skipped -- "
 								+ suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID));
-						
+
 					}
-					//extent.flush();
 				}
-				//pushing result to report
+				// pushing result to report
 				extent.flush();
-				
-				//making it null to prevent data of previous modules from appending into new module report
-				test=null;
+
+				// making it null to prevent data of previous modules from
+				// appending into new module report
+				test = null;
 			}
-			
 
 		}
 	}
 
-	public void executeKeywords() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+	public void processKeywords() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, IOException {
 
 		// getting the total row count of testCaseSheet
@@ -252,7 +264,7 @@ public class DriverScript {
 				if (currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET, Constants.RUNMODE, currentTestStepID)
 						.equals(Constants.RUNMODE_YES)) {
 
-					// getting the data
+					// getting the data from excel sheet data column
 					data = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.DATA,
 							currentTestStepID);
 					if (data.startsWith(Constants.DATA_START_COL)) {
@@ -275,41 +287,46 @@ public class DriverScript {
 					// key will be fetched by the keyword
 					object = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.OBJECT,
 							currentTestStepID);
-					currentKeyword = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.KEYWORD,
-							currentTestStepID);
-					APP_LOGS.debug(currentKeyword);
 
-					// running loop to check if keyword exists in the keyword
-					// class
-					for (int i = 0; i < method.length; i++) {
+					if (currentTestSuiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
+							.equals(Constants.KEYWORDCLASS)) {
 
-						if (method[i].getName().equals(currentKeyword)) {
-							keyword_execution_result = (String) method[i].invoke(keywords, object, data);
-							APP_LOGS.debug(keyword_execution_result);
-							resultSet.add(keyword_execution_result);
+						currentKeyword = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.KEYWORD,
+								currentTestStepID);
+						APP_LOGS.debug(currentKeyword);
 
-							// capturing screenshot if any test fails
-							if (keyword_execution_result.contains(Constants.KEYWORD_FAIL)) {
-								capturescreenShot_method.invoke(keywords,
-										currentTestModuleID + "_" + currentTestSuite + "_" + "_TS"
-												+ (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
-										keyword_execution_result);
-								
-								//adding screenshot if test fails
-								test.log(Status.FAIL,
-										keyword_execution_result + test.addScreenCaptureFromPath(
-												System.getProperty("user.dir") + "//screenshots//" + currentTestModuleID
-														+ "_" + currentTestSuite + "_" + "_TS" + (currentTestStepID - 1)
-														+ "_" + (currentTestDataSetID - 1) + ".jpg"));
+						// running loop to check if keyword exists in the
+						// keyword
+						// class
+						for (int i = 0; i < methodKeywords.length; i++) {
 
-							} else {
-								test.log(Status.PASS, keyword_execution_result);
+							if (methodKeywords[i].getName().equals(currentKeyword)) {
+								keyword_execution_result = (String) methodKeywords[i].invoke(keywords, object, data);
+								APP_LOGS.debug(keyword_execution_result);
+								resultSet.add(keyword_execution_result);
+
+								// capturing screenshot if any test fails
+								if (keyword_execution_result.contains(Constants.KEYWORD_FAIL)) {
+									capturescreenShot_method.invoke(keywords,
+											currentTestModuleID + "_" + currentTestSuite + "_" + "_TS"
+													+ (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
+											keyword_execution_result);
+
+									// adding screenshot if test fails
+									test.log(Status.FAIL, keyword_execution_result + test.addScreenCaptureFromPath(
+											System.getProperty("user.dir") + "//screenshots//" + currentTestModuleID
+													+ "_" + currentTestSuite + "_" + "_TS" + (currentTestStepID - 1)
+													+ "_" + (currentTestDataSetID - 1) + ".jpg"));
+
+								} else {
+									test.log(Status.PASS, keyword_execution_result);
+								}
+
 							}
-
 						}
 					}
 				} else {
-					//creating enty in report for skipped test step
+					// creating enty in report for skipped test step
 					test.log(Status.SKIP, currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, "Test Step Desc",
 							currentTestStepID));
 				}
@@ -318,54 +335,45 @@ public class DriverScript {
 
 	}
 
-	public void createXLSReport() {
-
-		String colName = Constants.RESULT/* + (currentTestDataSetID - 1) */;
-		boolean isColExist = false;
-
-		for (int c = 0; c < currentTestSuiteXLS.getColumnCount(Constants.TEST_STEPS_SHEET); c++) {
-			if (currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, c, 1).equals(colName)) {
-				isColExist = true;
-				break;
-			}
-		}
-
-		if (!isColExist)
-			currentTestSuiteXLS.addColumn(Constants.TEST_STEPS_SHEET, colName);
-		int index = 0;
-		for (int i = 2; i <= currentTestSuiteXLS.getRowCount(Constants.TEST_STEPS_SHEET); i++) {
-
-			if (currentTestSuite
-					.equals(currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.TCID, i))) {
-				if (currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET, Constants.RUNMODE, i)
-						.equals(Constants.RUNMODE_YES)) {
-					if (resultSet.size() == 0)
-						currentTestSuiteXLS.setCellData(Constants.TEST_STEPS_SHEET, colName, i, Constants.KEYWORD_SKIP);
-					else
-						currentTestSuiteXLS.setCellData(Constants.TEST_STEPS_SHEET, colName, i, resultSet.get(index));
-					index++;
-				}
-			}
-
-		}
-
-		if (resultSet.size() == 0) {
-			// skip
-			currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT, currentTestDataSetID,
-					Constants.KEYWORD_SKIP);
-			return;
-		} else {
-			for (int i = 0; i < resultSet.size(); i++) {
-				if (!resultSet.get(i).equals(Constants.KEYWORD_PASS)) {
-					currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT, currentTestDataSetID,
-							resultSet.get(i));
-					return;
-				}
-			}
-		}
-		currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT, currentTestDataSetID,
-				Constants.KEYWORD_PASS);
-
-	}
-
+	/*
+	 * public void createXLSReport() {
+	 * 
+	 * String colName = Constants.RESULT + (currentTestDataSetID - 1) ; boolean
+	 * isColExist = false;
+	 * 
+	 * for (int c = 0; c <
+	 * currentTestSuiteXLS.getColumnCount(Constants.TEST_STEPS_SHEET); c++) { if
+	 * (currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, c,
+	 * 1).equals(colName)) { isColExist = true; break; } }
+	 * 
+	 * if (!isColExist)
+	 * currentTestSuiteXLS.addColumn(Constants.TEST_STEPS_SHEET, colName); int
+	 * index = 0; for (int i = 2; i <=
+	 * currentTestSuiteXLS.getRowCount(Constants.TEST_STEPS_SHEET); i++) {
+	 * 
+	 * if (currentTestSuite
+	 * .equals(currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET,
+	 * Constants.TCID, i))) { if
+	 * (currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET,
+	 * Constants.RUNMODE, i) .equals(Constants.RUNMODE_YES)) { if
+	 * (resultSet.size() == 0)
+	 * currentTestSuiteXLS.setCellData(Constants.TEST_STEPS_SHEET, colName, i,
+	 * Constants.KEYWORD_SKIP); else
+	 * currentTestSuiteXLS.setCellData(Constants.TEST_STEPS_SHEET, colName, i,
+	 * resultSet.get(index)); index++; } }
+	 * 
+	 * }
+	 * 
+	 * if (resultSet.size() == 0) { // skip
+	 * currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT,
+	 * currentTestDataSetID, Constants.KEYWORD_SKIP); return; } else { for (int
+	 * i = 0; i < resultSet.size(); i++) { if
+	 * (!resultSet.get(i).equals(Constants.KEYWORD_PASS)) {
+	 * currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT,
+	 * currentTestDataSetID, resultSet.get(i)); return; } } }
+	 * currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT,
+	 * currentTestDataSetID, Constants.KEYWORD_PASS);
+	 * 
+	 * }
+	 */
 }

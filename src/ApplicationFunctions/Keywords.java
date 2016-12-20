@@ -1,4 +1,5 @@
 package ApplicationFunctions;
+import Constants.Constants;
 
 import static ApplicationFunctions.DriverScript.APP_LOGS;
 import static ApplicationFunctions.DriverScript.CONFIG;
@@ -9,12 +10,19 @@ import static ApplicationFunctions.DriverScript.currentTestSuiteXLS;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.By.ByXPath;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -24,6 +32,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.Select;
+
+import sun.util.resources.CalendarData;
 
 public class Keywords {
 
@@ -68,10 +78,14 @@ public class Keywords {
 		return Constants.KEYWORD_PASS + " -- Clicked on link";
 	}
 
-	// to click on a link - link text
+	// to click on a link by link text
 	public String clickLink_linkText(String object, String data) {
 		APP_LOGS.debug("Clicking on link ");
-		driver.findElement(By.linkText(OR.getProperty(object))).click();
+		if (data == null) {
+			driver.findElement(By.linkText(OR.getProperty(object))).click();
+		} else {
+			driver.findElement(By.linkText(CONFIG.getProperty(data))).click();
+		}
 
 		return Constants.KEYWORD_PASS + " -- Clicked on link";
 	}
@@ -84,7 +98,7 @@ public class Keywords {
 			String expected = data;
 
 			if (actual.equals(expected))
-				return Constants.KEYWORD_PASS + " -- Link text verified - "+data;
+				return Constants.KEYWORD_PASS + " -- Link text verified - " + data;
 			else
 				return Constants.KEYWORD_FAIL + " -- Link text not verified";
 
@@ -337,7 +351,7 @@ public class Keywords {
 			String expected = data;
 
 			if (actual.equals(expected))
-				return Constants.KEYWORD_PASS + " -- Verified Text - "+data;
+				return Constants.KEYWORD_PASS + " -- Verified Text - " + data;
 			else
 				return Constants.KEYWORD_FAIL + " -- text not verified " + actual + " -- " + expected;
 		} catch (Exception e) {
@@ -411,7 +425,7 @@ public class Keywords {
 		try {
 			driver.findElement(By.xpath(OR.getProperty(object)));
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " Object doest not exist";
+			return Constants.KEYWORD_FAIL + " Element doesn't not exist";
 		}
 
 		return Constants.KEYWORD_PASS + " -- Element Exists";
@@ -468,7 +482,7 @@ public class Keywords {
 	public String pause(String object, String data) throws NumberFormatException, InterruptedException {
 		long time = (long) Double.parseDouble(object);
 		Thread.sleep(time * 1000L);
-		return Constants.KEYWORD_PASS + " -- Static Pause" ;
+		return Constants.KEYWORD_PASS + " -- Static Pause";
 	}
 
 	/************************
@@ -549,7 +563,6 @@ public class Keywords {
 	}
 
 	// not a keyword
-
 	public void captureScreenshot(String filename, String keyword_execution_result) throws IOException {
 		// take screen shots
 		if (CONFIG.getProperty("screenshot_everystep").equals("Y")) {

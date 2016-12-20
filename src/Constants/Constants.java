@@ -1,4 +1,4 @@
-package ApplicationFunctions;
+package Constants;
 
 public class Constants {
 	
@@ -10,6 +10,7 @@ public class Constants {
 	public static String Test_Module_Excel_Key = "EXCEL_KEY";
 	
 	public static String defaultPath = System.getProperty("user.dir");
+	
 	
 	public static String TEST_SUITE_SHEET="TestSuite";
 	public static String Test_Suite_ID="TCID";
@@ -32,6 +33,12 @@ public class Constants {
 	public static String CONFIG="config";
 	public static final String SUITE_ID = "TSID";
 	public static final String DESCRIPTION = "Description";
+	public static String CLASS = "Class";
+	
+	
+	public static String KEYWORDCLASS = "Keyword";
+	public static String PREREQUISITESCLASS = "Pre";
+	public static String APPLICATIONSPECIFICCLASS = "App";
 	public static String vURL="www.google.com";
 
 
