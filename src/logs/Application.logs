@@ -1,12 +1,34 @@
-21/12/2016 01:25:16 devpinoyLogger Hello
-21/12/2016 01:25:16 devpinoyLogger Loading Module Excel Sheet
-21/12/2016 01:25:17 devpinoyLogger Checking the Runmode of Module
-21/12/2016 01:25:17 devpinoyLogger TM001--Y
-21/12/2016 01:25:17 devpinoyLogger Executing Module Add_Appointment_Excel
-21/12/2016 01:25:17 devpinoyLogger Properties loaded. Starting testing
-21/12/2016 01:25:17 devpinoyLogger Intialize Suite xlsx
-21/12/2016 01:25:18 devpinoyLogger TC001 -- Y
-21/12/2016 01:25:18 devpinoyLogger ******Executing the Suite******TC001
-21/12/2016 01:25:18 devpinoyLogger TC001 -- Y
-21/12/2016 01:25:18 devpinoyLogger Executing the test step -> TC001
-21/12/2016 01:25:18 devpinoyLogger Iteration number 1
+21/12/2016 19:34:46 devpinoyLogger Hello
+21/12/2016 19:34:46 devpinoyLogger Loading Module Excel Sheet
+21/12/2016 19:34:47 devpinoyLogger Checking the Runmode of Module
+21/12/2016 19:34:47 devpinoyLogger TM001--Y
+21/12/2016 19:34:47 devpinoyLogger Executing Module Add_Appointment_Excel
+21/12/2016 19:34:47 devpinoyLogger Properties loaded. Starting testing
+21/12/2016 19:34:47 devpinoyLogger Intialize Suite xlsx
+21/12/2016 19:34:47 devpinoyLogger TC001 -- Y
+21/12/2016 19:34:47 devpinoyLogger ******Executing the Suite******TC001
+21/12/2016 19:34:48 devpinoyLogger TC001 -- Y
+21/12/2016 19:34:48 devpinoyLogger Executing the test step -> TC001
+21/12/2016 19:34:48 devpinoyLogger Iteration number 1
+21/12/2016 19:34:48 devpinoyLogger openBrowser
+21/12/2016 19:34:48 devpinoyLogger Opening browser
+21/12/2016 19:34:54 devpinoyLogger Pass -- Browser Opened
+21/12/2016 19:34:54 devpinoyLogger navigate
+21/12/2016 19:34:54 devpinoyLogger Navigating to URL
+21/12/2016 19:35:14 devpinoyLogger Pass -- Navigate to url
+21/12/2016 19:35:14 devpinoyLogger writeInInput
+21/12/2016 19:35:14 devpinoyLogger Writing in text box
+21/12/2016 19:35:16 devpinoyLogger Pass -- Wrote in input field
+21/12/2016 19:35:16 devpinoyLogger writeInInput
+21/12/2016 19:35:16 devpinoyLogger Writing in text box
+21/12/2016 19:35:17 devpinoyLogger Pass -- Wrote in input field
+21/12/2016 19:35:17 devpinoyLogger clickButton
+21/12/2016 19:35:17 devpinoyLogger Clicking on Button
+21/12/2016 19:35:18 devpinoyLogger Pass -- Button Clicked
+21/12/2016 19:35:18 devpinoyLogger waitForPageLoad
+21/12/2016 19:35:18 devpinoyLogger waiting for element to load
+21/12/2016 19:35:18 devpinoyLogger Pass -- Waited for page load
+21/12/2016 19:35:18 devpinoyLogger addAppointment
+21/12/2016 19:35:18 devpinoyLogger Navigating to URL
+21/12/2016 19:35:18 devpinoyLogger Fail -- Not able to navigatejava.lang.NullPointerException
+21/12/2016 19:35:18 devpinoyLogger Fail -- Not able to navigatejava.lang.NullPointerException

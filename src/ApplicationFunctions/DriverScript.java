@@ -1,5 +1,6 @@
 package ApplicationFunctions;
 
+import Utility.Xls_Reader;
 import Constants.Constants;
 
 import java.io.File;
@@ -28,6 +29,8 @@ import com.relevantcodes.extentreports.LogStatus;*/
 
 import Utility.TestConfig;
 import Utility.ZipFile;
+import Utility.PropertyLoader;
+
 
 public class DriverScript {
 
@@ -62,11 +65,12 @@ public class DriverScript {
 	public static ApplicationSpecific applicationSpecific;
 	public static String keyword_execution_result;
 	public static ArrayList<String> resultSet;
-	public static String data;
-	public static String object;
+	
 	public static Properties OR;
 	public static Properties CONFIG;
 	public static Properties EXCEL_PATH;
+
+	Execute execute = new Execute();
 
 	// Extent Report
 	ExtentXReporter extentx;
@@ -78,12 +82,16 @@ public class DriverScript {
 		applicationSpecific = new ApplicationSpecific();
 
 		methodKeywords = keywords.getClass().getMethods();
-		//methodPrerequisites = methodPrerequisites.getClass().getMethods();
-		//methodApplicationSpecific = methodApplicationSpecific.getClass().getMethods();
+		methodPrerequisites = prerequisites.getClass().getMethods();
+		methodApplicationSpecific = applicationSpecific.getClass().getMethods();
 
 		capturescreenShot_method = keywords.getClass().getMethod("captureScreenshot", String.class, String.class);
-		//capturescreenShot_method = prerequisites.getClass().getMethod("captureScreenshot", String.class, String.class);
-		//capturescreenShot_method = methodApplicationSpecific.getClass().getMethod("captureScreenshot", String.class,String.class);
+		// capturescreenShot_method =
+		// prerequisites.getClass().getMethod("captureScreenshot", String.class,
+		// String.class);
+		// capturescreenShot_method =
+		// methodApplicationSpecific.getClass().getMethod("captureScreenshot",
+		// String.class,String.class);
 	}
 
 	public static void main(String[] args)
@@ -261,78 +269,132 @@ public class DriverScript {
 					currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET, Constants.TCID, currentTestStepID))) {
 
 				// checking the run mode of the test step
-				if (currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET, Constants.RUNMODE, currentTestStepID)
-						.equals(Constants.RUNMODE_YES)) {
+				
 
-					// getting the data from excel sheet data column
-					data = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.DATA,
-							currentTestStepID);
-					if (data.startsWith(Constants.DATA_START_COL)) {
-						// read actual data value from the corresponding column
-						data = currentTestSuiteXLS.getCellData(currentTestSuite, data.split(Constants.DATA_SPLIT)[1],
-								currentTestDataSetID);
-					} else if (data.startsWith(Constants.CONFIG)) {
-						// read actual data value from config.properties
-						data = CONFIG.getProperty(data.split(Constants.DATA_SPLIT)[1]);
-					} else {
+					
+					currentKeyword = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET,
+							Constants.KEYWORD, currentTestStepID);
+					APP_LOGS.debug(currentKeyword);
+					
+					
+					for (int i = 0; i < methodKeywords.length; i++) {
 
-						// getting key from excel sheet and find value against
-						// key from config.properties file
-						data = CONFIG.getProperty(currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET,
-								Constants.DATA, currentTestStepID));
-
-					}
-
-					// getting the key from excel sheet and value against the
-					// key will be fetched by the keyword
-					object = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.OBJECT,
-							currentTestStepID);
-
-					if (currentTestSuiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
-							.equals(Constants.KEYWORDCLASS)) {
-
-						currentKeyword = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.KEYWORD,
-								currentTestStepID);
-						APP_LOGS.debug(currentKeyword);
-
-						// running loop to check if keyword exists in the
-						// keyword
-						// class
-						for (int i = 0; i < methodKeywords.length; i++) {
-
-							if (methodKeywords[i].getName().equals(currentKeyword)) {
-								keyword_execution_result = (String) methodKeywords[i].invoke(keywords, object, data);
-								APP_LOGS.debug(keyword_execution_result);
-								resultSet.add(keyword_execution_result);
-
-								// capturing screenshot if any test fails
-								if (keyword_execution_result.contains(Constants.KEYWORD_FAIL)) {
-									capturescreenShot_method.invoke(keywords,
-											currentTestModuleID + "_" + currentTestSuite + "_" + "_TS"
-													+ (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
-											keyword_execution_result);
-
-									// adding screenshot if test fails
-									test.log(Status.FAIL, keyword_execution_result + test.addScreenCaptureFromPath(
-											System.getProperty("user.dir") + "//screenshots//" + currentTestModuleID
-													+ "_" + currentTestSuite + "_" + "_TS" + (currentTestStepID - 1)
-													+ "_" + (currentTestDataSetID - 1) + ".jpg"));
-
-								} else {
-									test.log(Status.PASS, keyword_execution_result);
-								}
-
-							}
+						if (methodKeywords[i].getName().equals(currentKeyword)) {
+							execute.executeKeyword(test, currentTestSuite, currentTestSuiteXLS, currentTestStepID);
+							break;
 						}
 					}
-				} else {
-					// creating enty in report for skipped test step
-					test.log(Status.SKIP, currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, "Test Step Desc",
-							currentTestStepID));
+					
+					for (int i = 0; i < methodPrerequisites.length; i++) {
+
+						if (methodPrerequisites[i].getName().equals(currentKeyword)) {
+							execute.ExecutePrerequisites(test, currentTestSuite, currentTestSuiteXLS);
+							break;
+						}
+					}
+					
+					for (int i = 0; i < methodApplicationSpecific.length; i++) {
+
+						if (methodApplicationSpecific[i].getName().equals(currentKeyword)) {
+							execute.ExecuteApplicationSpecific(test, currentTestSuite, currentTestSuiteXLS);
+							break;
+						}
+					}
+
+
+					
+					
+					// getting the data from excel sheet data column
+					/*
+					 * data = currentTestSuiteXLS.getCellData(Constants.
+					 * TEST_STEPS_SHEET, Constants.DATA, currentTestStepID); if
+					 * (data.startsWith(Constants.DATA_START_COL)) { // read
+					 * actual data value from the corresponding column data =
+					 * currentTestSuiteXLS.getCellData(currentTestSuite,
+					 * data.split(Constants.DATA_SPLIT)[1],
+					 * currentTestDataSetID); } else if
+					 * (data.startsWith(Constants.CONFIG)) { // read actual data
+					 * value from config.properties data =
+					 * CONFIG.getProperty(data.split(Constants.DATA_SPLIT)[1]);
+					 * } else {
+					 * 
+					 * // getting key from excel sheet and find value against //
+					 * key from config.properties file data =
+					 * CONFIG.getProperty(currentTestSuiteXLS.getCellData(
+					 * Constants.TEST_STEPS_SHEET, Constants.DATA,
+					 * currentTestStepID));
+					 * 
+					 * }
+					 * 
+					 * // getting the key from excel sheet and value against the
+					 * // key will be fetched by the keyword object =
+					 * currentTestSuiteXLS.getCellData(Constants.
+					 * TEST_STEPS_SHEET, Constants.OBJECT, currentTestStepID);
+					 */
+
+					
+					
+					
+					/*if (currentTestSuiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
+							.equals(Constants.KEYWORDCLASS)) {
+
+						execute.executeKeyword(test, currentTestSuite, currentTestSuiteXLS);
+
+					}else if(currentTestSuiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
+							.equals(Constants.PREREQUISITESCLASS)){
+						
+					}else if(currentTestSuiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
+							.equals(Constants.APPLICATIONSPECIFICCLASS)){
+						
+					}*/
+
+					
+					
+					
+					
+					/*
+					 * currentKeyword =
+					 * currentTestSuiteXLS.getCellData(Constants.
+					 * TEST_STEPS_SHEET, Constants.KEYWORD, currentTestStepID);
+					 * APP_LOGS.debug(currentKeyword);
+					 * 
+					 * // running loop to check if keyword exists in the //
+					 * keyword // class for (int i = 0; i <
+					 * methodKeywords.length; i++) {
+					 * 
+					 * if (methodKeywords[i].getName().equals(currentKeyword)) {
+					 * keyword_execution_result = (String)
+					 * methodKeywords[i].invoke(keywords, object, data);
+					 * APP_LOGS.debug(keyword_execution_result);
+					 * resultSet.add(keyword_execution_result);
+					 * 
+					 * // capturing screenshot if any test fails if
+					 * (keyword_execution_result.contains(Constants.KEYWORD_FAIL
+					 * )) { capturescreenShot_method.invoke(keywords,
+					 * currentTestModuleID + "_" + currentTestSuite + "_" +
+					 * "_TS" + (currentTestStepID - 1) + "_" +
+					 * (currentTestDataSetID - 1), keyword_execution_result);
+					 * 
+					 * // adding screenshot if test fails test.log(Status.FAIL,
+					 * keyword_execution_result + test.addScreenCaptureFromPath(
+					 * System.getProperty("user.dir") + "//screenshots//" +
+					 * currentTestModuleID + "_" + currentTestSuite + "_" +
+					 * "_TS" + (currentTestStepID - 1) + "_" +
+					 * (currentTestDataSetID - 1) + ".jpg"));
+					 * 
+					 * } else { test.log(Status.PASS, keyword_execution_result);
+					 * }
+					 * 
+					 * } } } } else { // creating enty in report for skipped
+					 * test step test.log(Status.SKIP,
+					 * currentTestSuiteXLS.getCellData(Constants.
+					 * TEST_STEPS_SHEET, "Test Step Desc", currentTestStepID));
+					 * } }
+					 */
+
 				}
 			}
 		}
-
 	}
 
 	/*
@@ -376,4 +438,4 @@ public class DriverScript {
 	 * 
 	 * }
 	 */
-}
+

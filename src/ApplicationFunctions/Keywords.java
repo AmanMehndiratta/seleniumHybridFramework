@@ -61,7 +61,7 @@ public class Keywords {
 		try {
 			driver.navigate().to(data);
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " -- Not able to navigate";
+			return Constants.KEYWORD_FAIL + " -- Not able to navigate" +e;
 		}
 		return Constants.KEYWORD_PASS + " -- Navigate to url";
 	}
@@ -580,5 +580,33 @@ public class Keywords {
 					new File(System.getProperty("user.dir") + "//screenshots//" + filename + ".jpg"));
 		}
 	}
+	
+	
+	
+	/*-------------------------application specific----------------------*/
+	
+	public String randomPatientName(){
+		char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+		StringBuilder pName = new StringBuilder();
+		Random random = new Random();
+		for (int i = 0; i < 10; i++) {
+		    char c = chars[random.nextInt(chars.length)];
+		    pName.append(c);
+		}
+		return pName.toString();
+		
+	}
+	
+	public String randomMobileNumber(){
+		StringBuilder pNum = new StringBuilder();
+		for (int i = 0; i < 10; i++) {
+			int num = (int) Math.random();
+			pNum.append(num);
+		}
+		return pNum.toString();
+	}
+	
+	
+	
 
 }

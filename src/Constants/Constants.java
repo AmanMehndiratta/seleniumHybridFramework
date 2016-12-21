@@ -19,6 +19,16 @@ public class Constants {
 	public static String RUNMODE = "Execute";
 	public static String TCID="TSID";
 	public static String TEST_STEPS_SHEET="TestSteps";
+	
+	
+	//test data sheet name and columns
+	public static String TEST_DATA_SHEET="TestData";
+	public static String TEST_DATA_ID = "TDID";
+	public static String TEST_URL = "URL";
+	
+	
+	
+	
 	public static String KEYWORD="Keyword";
 	public static String KEYWORD_PASS="Pass";
 	public static String KEYWORD_FAIL="Fail";
