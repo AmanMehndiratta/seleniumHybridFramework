@@ -1,4 +1,6 @@
 package ApplicationFunctions;
+
+import Constants.ConstantPaths;
 import Constants.Constants;
 
 import static ApplicationFunctions.DriverScript.APP_LOGS;
@@ -37,20 +39,25 @@ import sun.util.resources.CalendarData;
 
 public class Keywords {
 
-	public WebDriver driver;
+	public static WebDriver driver;
+	Prerequisites pre;
 
 	// to open browser
 	public String openBrowser(String object, String data) {
 		DriverScript.APP_LOGS.debug("Opening browser");
-		if (data.equals("Mozilla"))
-			driver = new FirefoxDriver();
-		else if (data.equals("IE"))
-			driver = new InternetExplorerDriver();
-		else if (data.equals("Chrome"))
-			driver = new ChromeDriver();
+		try {
+			if (data.equals("Mozilla"))
+				driver = new FirefoxDriver();
+			else if (data.equals("IE"))
+				driver = new InternetExplorerDriver();
+			else if (data.equals("Chrome"))
+				driver = new ChromeDriver();
 
-		long implicitWaitTime = Long.parseLong(CONFIG.getProperty("implicitwait"));
-		driver.manage().timeouts().implicitlyWait(implicitWaitTime, TimeUnit.SECONDS);
+			long implicitWaitTime = Long.parseLong(CONFIG.getProperty("implicitwait"));
+			driver.manage().timeouts().implicitlyWait(implicitWaitTime, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			return Constants.KEYWORD_FAIL + " -- Unable to open browser" + e.getMessage();
+		}
 		return Constants.KEYWORD_PASS + " -- Browser Opened";
 
 	}
@@ -61,7 +68,7 @@ public class Keywords {
 		try {
 			driver.navigate().to(data);
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " -- Not able to navigate" +e;
+			return Constants.KEYWORD_FAIL + " -- Not able to navigate" + e.getMessage();
 		}
 		return Constants.KEYWORD_PASS + " -- Navigate to url";
 	}
@@ -81,12 +88,15 @@ public class Keywords {
 	// to click on a link by link text
 	public String clickLink_linkText(String object, String data) {
 		APP_LOGS.debug("Clicking on link ");
-		if (data == null) {
-			driver.findElement(By.linkText(OR.getProperty(object))).click();
-		} else {
-			driver.findElement(By.linkText(CONFIG.getProperty(data))).click();
+		try {
+			if (data == null) {
+				driver.findElement(By.linkText(OR.getProperty(object))).click();
+			} else {
+				driver.findElement(By.linkText(CONFIG.getProperty(data))).click();
+			}
+		} catch (Exception e) {
+			return Constants.KEYWORD_FAIL + "Unable to click link by text" + e.getMessage();
 		}
-
 		return Constants.KEYWORD_PASS + " -- Clicked on link";
 	}
 
@@ -222,7 +232,7 @@ public class Keywords {
 			String temp[] = object.split(Constants.DATA_SPLIT);
 			driver.findElement(By.xpath(OR.getProperty(temp[0]) + data + OR.getProperty(temp[1]))).click();
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + "- Not able to find radio button";
+			return Constants.KEYWORD_FAIL + "- Not able to find radio button" + e.getMessage();
 
 		}
 
@@ -241,7 +251,7 @@ public class Keywords {
 			driver.manage().timeouts().pageLoadTimeout(Long.parseLong(data), TimeUnit.SECONDS);
 
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + "- Not able to find radio button";
+			return Constants.KEYWORD_FAIL + "- Not able to find radio button" + e.getMessage();
 
 		}
 		return Constants.KEYWORD_PASS + " -- Waited for page load";
@@ -251,10 +261,11 @@ public class Keywords {
 	public String selectDropdown(String object, String data) {
 		APP_LOGS.debug("Selecting a dropdown element");
 		try {
-			Select dropdown = new Select(driver.findElement(By.id(data)));
+			driver.findElement(By.name(OR.getProperty(object))).click();
+			;
 			// driver.findElement(By.xpath(OR.getProperty(temp[0])+data+OR.getProperty(temp[1]))).click();
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + "- Not able to select dropdown value";
+			return Constants.KEYWORD_FAIL + "- Not able to select dropdown value" + e.getMessage();
 
 		}
 
@@ -268,7 +279,7 @@ public class Keywords {
 		try {
 			Thread.sleep(20000);
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + "- Not able to select dropdown value";
+			return Constants.KEYWORD_FAIL + "- Not able to select dropdown value" + e.getMessage();
 
 		}
 
@@ -289,7 +300,7 @@ public class Keywords {
 				return Constants.KEYWORD_FAIL + "- Radio not selected";
 
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + "- Not able to find radio button";
+			return Constants.KEYWORD_FAIL + "- Not able to find radio button" + e.getMessage();
 
 		}
 
@@ -306,7 +317,7 @@ public class Keywords {
 			if (checked == null)// checkbox is unchecked
 				driver.findElement(By.xpath(OR.getProperty(object))).click();
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " - Could not find checkbo";
+			return Constants.KEYWORD_FAIL + " - Could not find checkbo" + e.getMessage();
 		}
 		return Constants.KEYWORD_PASS + " -- CheckBox selection checked";
 
@@ -320,7 +331,7 @@ public class Keywords {
 			if (checked != null)
 				driver.findElement(By.xpath(OR.getProperty(object))).click();
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " - Could not find checkbox";
+			return Constants.KEYWORD_FAIL + " - Could not find checkbox" + e.getMessage();
 		}
 		return Constants.KEYWORD_PASS + " -- Checkbox Unchecked";
 
@@ -337,7 +348,7 @@ public class Keywords {
 				return Constants.KEYWORD_FAIL + " - Not selected";
 
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " - Could not find checkbox";
+			return Constants.KEYWORD_FAIL + " - Could not find checkbox" + e.getMessage();
 
 		}
 
@@ -416,7 +427,7 @@ public class Keywords {
 			else
 				return Constants.KEYWORD_FAIL + " -- Title not verified " + expectedTitle + " -- " + actualTitle;
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " Error in retrieving title";
+			return Constants.KEYWORD_FAIL + " Error in retrieving title" + e.getMessage();
 		}
 	}
 
@@ -425,7 +436,7 @@ public class Keywords {
 		try {
 			driver.findElement(By.xpath(OR.getProperty(object)));
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " Element doesn't not exist";
+			return Constants.KEYWORD_FAIL + " Element doesn't not exist" + e.getMessage();
 		}
 
 		return Constants.KEYWORD_PASS + " -- Element Exists";
@@ -436,7 +447,7 @@ public class Keywords {
 		try {
 			driver.findElement(By.xpath(OR.getProperty(object))).click();
 		} catch (Exception e) {
-			return Constants.KEYWORD_FAIL + " Not able to click";
+			return Constants.KEYWORD_FAIL + " Not able to click" + e.getMessage();
 		}
 		return Constants.KEYWORD_PASS + " -- Clicked on Element";
 	}
@@ -580,33 +591,59 @@ public class Keywords {
 					new File(System.getProperty("user.dir") + "//screenshots//" + filename + ".jpg"));
 		}
 	}
-	
-	
-	
+
+	/*-------------------------added Later----------------------*/
+
+	public String getText(String object, String data) {
+		APP_LOGS.debug("Getting Text from given path");
+		String get_text;
+		try {
+			if ((OR.containsKey(object))) {
+
+				get_text = driver.findElement(By.xpath(OR.getProperty(object))).getText();
+
+			} else {
+
+				get_text = driver.findElement(By.xpath(object)).getText();
+
+			}
+
+		} catch (Exception e) {
+			return Constants.KEYWORD_FAIL + "--Unable to get text-->" + e.getMessage();
+		}
+		return Constants.KEYWORD_PASS + "-- Got text --->" + get_text;
+
+	}
+
 	/*-------------------------application specific----------------------*/
-	
-	public String randomPatientName(){
-		char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+
+	public String randomPatientName() {
 		StringBuilder pName = new StringBuilder();
-		Random random = new Random();
-		for (int i = 0; i < 10; i++) {
-		    char c = chars[random.nextInt(chars.length)];
-		    pName.append(c);
+		try {
+			char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+			Random random = new Random();
+			for (int i = 0; i < 10; i++) {
+				char c = chars[random.nextInt(chars.length)];
+				pName.append(c);
+			}
+		} catch (Exception e) {
+			return Constants.KEYWORD_FAIL + "- Unable to generate random patient name" + e.getMessage();
 		}
 		return pName.toString();
-		
+
 	}
-	
-	public String randomMobileNumber(){
+
+	public String randomMobileNumber() {
 		StringBuilder pNum = new StringBuilder();
+		try{
 		for (int i = 0; i < 10; i++) {
 			int num = (int) Math.random();
 			pNum.append(num);
 		}
+		}catch(Exception e){
+			return Constants.KEYWORD_FAIL + "Unable to generate random patient mob no." + e.getMessage();
+		}
 		return pNum.toString();
 	}
-	
-	
-	
 
 }

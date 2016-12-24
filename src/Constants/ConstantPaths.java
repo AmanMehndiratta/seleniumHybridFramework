@@ -27,7 +27,9 @@ public class ConstantPaths {
 	public static String global_Seach_Button_DD = ".//*[@id='searchBtnContainer']/input";
 	
 	
-	
+	//Doctor DB 
+	public static String doctor_DB_TodaysAppointment = ".//*[@id='todayAppointmentsContainer']/div[1]/h2";
+	public static String doctor_DB_AddAppointment = ".//*[@id='dashBoardAppointmentAdd']/span";
 	
 	
 	//constant url

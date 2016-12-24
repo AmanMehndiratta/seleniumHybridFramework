@@ -25,7 +25,8 @@ public class Constants {
 	public static String TEST_DATA_SHEET="TestData";
 	public static String TEST_DATA_ID = "TDID";
 	public static String TEST_URL = "URL";
-	
+	public static String TEST_USERNAME = "Username";
+	public static String TEST_PASSWORD = "Password";
 	
 	
 	
