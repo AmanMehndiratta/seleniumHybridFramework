@@ -2,6 +2,8 @@ package Utility;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
@@ -23,10 +25,9 @@ public class ExtentReportConfigrator {
 	ExtentReports extent = new ExtentReports();
 	ExtentHtmlReporter htmlReporter;
 
-	
-	//creating report 
+	// creating report
 	public void generateReport(String currentTestModuleName) {
-		
+
 		htmlReporter = new ExtentHtmlReporter(
 				System.getProperty("user.dir") + "\\test-output\\" + currentTestModuleName + ".html");
 
@@ -34,8 +35,7 @@ public class ExtentReportConfigrator {
 
 		htmlReporter.setAppendExisting(false);
 	}
-	
-	
+
 	public void configureReport() {
 
 		List<Status> statusHierarchy = Arrays.asList(Status.FATAL, Status.FAIL, Status.ERROR, Status.WARNING,
@@ -51,16 +51,46 @@ public class ExtentReportConfigrator {
 	}
 
 	public void reportUserInfo(Xls_Reader automationModuleXLSX) throws UnknownHostException {
-		
-		InetAddress addr;
-	    addr = InetAddress.getLocalHost();
-	    String hostname = addr.getHostName();
-	    String ipAddress = addr.getHostAddress();
-	    
-		
+
+		InetAddress ipAddress;
+		String hostname = null;
+		String macAddress = null;
+		String ip = null;
+
+		try {
+
+			ipAddress = InetAddress.getLocalHost();
+			ip = ipAddress.getHostAddress().toString();
+
+			NetworkInterface network = NetworkInterface.getByInetAddress(ipAddress);
+
+			byte[] mac = network.getHardwareAddress();
+
+			System.out.print("Current MAC address : ");
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < mac.length; i++) {
+				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+			}
+			macAddress = sb.toString();
+
+			hostname = InetAddress.getLocalHost().getHostName();
+
+		} catch (UnknownHostException e) {
+
+			e.printStackTrace();
+
+		} catch (SocketException e) {
+
+			e.printStackTrace();
+
+		}
+
 		// adding info about the report
 		extent.setSystemInfo("Host Name", hostname);
-		extent.setSystemInfo("IP Address", ipAddress);
+		extent.setSystemInfo("MAC Address", macAddress);
+		extent.setSystemInfo("IP Address", ip);
+
 		extent.setSystemInfo("OS Info", System.getProperty("os.name"));
 		extent.setSystemInfo("Environment",
 				automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "Environment", 2));
@@ -75,8 +105,7 @@ public class ExtentReportConfigrator {
 	}
 
 	public void assignTestCategory(int currentSuiteID, Xls_Reader suiteXLS) {
-		
-		
+
 		test.assignCategory(suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
 	}
 

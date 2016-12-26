@@ -145,10 +145,9 @@ public class DriverScript {
 				
 				ExtentReportConfigrator report = new ExtentReportConfigrator();
 				report.generateReport(currentTestModuleName);
-
-				
 				
 				report.configureReport();
+				
 				report.reportUserInfo(automationModuleXLSX);
 
 				
