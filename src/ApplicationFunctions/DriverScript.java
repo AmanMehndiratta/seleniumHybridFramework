@@ -32,6 +32,7 @@ import com.relevantcodes.extentreports.LogStatus;*/
 import Utility.TestConfig;
 import Utility.ZipFile;
 import Utility.PropertyLoader;
+import Utility.ExtentReportConfigrator;
 
 public class DriverScript {
 
@@ -51,8 +52,6 @@ public class DriverScript {
 
 	// current test suite
 	public static Xls_Reader currentTestSuiteXLS;
-	public static int currentTestCaseID;
-	public static String currentTestCaseName;
 	public static int currentTestStepID;
 	public static String currentKeyword;
 	public static int currentTestDataSetID = 2;
@@ -73,10 +72,9 @@ public class DriverScript {
 
 	Execute execute = new Execute();
 
-	// Extent Report
-	ExtentXReporter extentx;
-	ExtentTest test;
+	
 
+	
 	public DriverScript() throws NoSuchMethodException, SecurityException {
 		keywords = new Keywords();
 		prerequisites = new Prerequisites();
@@ -143,35 +141,17 @@ public class DriverScript {
 
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
+				
+				
+				ExtentReportConfigrator report = new ExtentReportConfigrator();
+				report.generateReport(currentTestModuleName);
 
-				// creating object here for preventing appending previous of
-				// report into new report
-				ExtentReports extent = new ExtentReports();
-				// initializing report with path and appending info
-				ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(
-						System.getProperty("user.dir") + "\\test-output\\" + currentTestModuleName + ".html");
-				extent.attachReporter(htmlReporter);
-				htmlReporter.setAppendExisting(false);
+				
+				
+				report.configureReport();
+				report.reportUserInfo(automationModuleXLSX);
 
-				// setting status hierarchy for extent report
-				List<Status> statusHierarchy = Arrays.asList(Status.FATAL, Status.FAIL, Status.ERROR, Status.WARNING,
-						Status.SKIP, Status.PASS, Status.INFO);
-
-				// report configuration
-				htmlReporter.config().setDocumentTitle("Clove Dental :)");
-				htmlReporter.config().setReportName("PRM Automation");
-				htmlReporter.config().setTestViewChartLocation(ChartLocation.TOP);
-				htmlReporter.config().setTheme(Theme.STANDARD);
-				extent.config().statusConfigurator().setStatusHierarchy(statusHierarchy);
-
-				// adding info about the report
-				extent.setSystemInfo("Host Name",
-						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "HostName", 2));
-				extent.setSystemInfo("Environment",
-						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "Environment", 2));
-				extent.setSystemInfo("User Name",
-						automationModuleXLSX.getCellData(Constants.Test_INFO_SHEET, "UserName", 2));
-
+				
 				APP_LOGS.debug("Executing Module " + currentTestModuleExcelKey);
 				APP_LOGS.debug("Properties loaded. Starting testing");
 				APP_LOGS.debug("Intialize Suite xlsx");
@@ -196,15 +176,10 @@ public class DriverScript {
 					if (suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.RUNMODE, currentSuiteID)
 							.equals(Constants.RUNMODE_YES)) {
 
-						// starting test for extent report
-						test = extent.createTest(
-								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
-								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
-
-						// assigning category to the test suite
-						test.assignCategory(suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
-						test.assignAuthor(
-								automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
+						report.createTest(currentSuiteID, suiteXLS);
+						report.assignTestCategory(currentSuiteID, suiteXLS);
+						report.assignTestAuthor(automationModuleXLSX, testModuleID);
+						
 
 						// printing the test suite which is being executing
 						APP_LOGS.debug("******Executing the Suite******" + suiteXLS
@@ -226,45 +201,35 @@ public class DriverScript {
 							APP_LOGS.debug("Iteration number " + (currentTestDataSetID - 1));
 
 							// running executeKeyword function
-							processKeywords();
+							processKeywords(report);
 
 							// createXLSReport();
 
 						} else {
 
 							resultSet = new ArrayList<String>();
-							processKeywords();
+							processKeywords(report);
 							// createXLSReport();
 						}
 					} else {
 
-						// creating entry in report for skipped tests
-						test = extent.createTest(
-								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
-								suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
-
-						// assigning category to the test suite
-						test.assignCategory(suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
-						test.assignAuthor(
-								automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, "Author", testModuleID));
-
-						test.log(Status.SKIP, "Test Suite Skipped -- "
-								+ suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID));
+						report.createTest(currentSuiteID, currentTestSuiteXLS);
+						report.assignTestCategory(currentSuiteID, currentTestSuiteXLS);
+						report.assignTestAuthor(automationModuleXLSX, testModuleID);
+						report.testSuiteSkip(suiteXLS, currentSuiteID);
 
 					}
 				}
-				// pushing result to report
-				extent.flush();
 
-				// making it null to prevent data of previous modules from
-				// appending into new module report
-				test = null;
+				report.flush();
+				report = null;
+				
 			}
 
 		}
 	}
 
-	public void processKeywords() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+	public void processKeywords(ExtentReportConfigrator report) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, IOException {
 
 		// getting the total row count of testCaseSheet
@@ -285,17 +250,18 @@ public class DriverScript {
 				for (int i = 0; i < methodKeywords.length; i++) {
 
 					if (methodKeywords[i].getName().equals(currentKeyword)) {
-						execute.executeKeyword(test, currentTestSuite, currentTestSuiteXLS, currentTestStepID,
+						execute.executeKeyword(currentTestSuite, currentTestSuiteXLS, currentTestStepID,
 								currentTestDataSetID, CONFIG, methodKeywords, capturescreenShot_method, APP_LOGS,
-								resultSet, keywords, currentKeyword, currentTestModuleID);
+								resultSet, keywords, currentKeyword, currentTestModuleID, report);
 						break;
 					} else {
 						for (int j = 0; j < methodPrerequisites.length; j++) {
 
 							if (methodPrerequisites[i].getName().equals(currentKeyword)) {
-								execute.ExecutePrerequisites(test, currentTestSuite, currentTestSuiteXLS, currentTestStepID,
-										currentTestDataSetID, CONFIG, methodPrerequisites, capturescreenShot_method, APP_LOGS,
-										resultSet, prerequisites, currentKeyword, currentTestModuleID);
+								execute.ExecutePrerequisites(currentTestSuite, currentTestSuiteXLS,
+										currentTestStepID, currentTestDataSetID, CONFIG, methodPrerequisites,
+										capturescreenShot_method, APP_LOGS, resultSet, prerequisites, currentKeyword,
+										currentTestModuleID, report);
 								break;
 							}
 						}
@@ -306,135 +272,15 @@ public class DriverScript {
 				for (int i = 0; i < methodApplicationSpecific.length; i++) {
 
 					if (methodApplicationSpecific[i].getName().equals(currentKeyword)) {
-						execute.ExecuteApplicationSpecific(test, currentTestSuite, currentTestSuiteXLS);
+						execute.ExecuteApplicationSpecific(currentTestSuite, currentTestSuiteXLS);
 						break;
 					}
 				}
 
-				// getting the data from excel sheet data column
-				/*
-				 * data = currentTestSuiteXLS.getCellData(Constants.
-				 * TEST_STEPS_SHEET, Constants.DATA, currentTestStepID); if
-				 * (data.startsWith(Constants.DATA_START_COL)) { // read actual
-				 * data value from the corresponding column data =
-				 * currentTestSuiteXLS.getCellData(currentTestSuite,
-				 * data.split(Constants.DATA_SPLIT)[1], currentTestDataSetID); }
-				 * else if (data.startsWith(Constants.CONFIG)) { // read actual
-				 * data value from config.properties data =
-				 * CONFIG.getProperty(data.split(Constants.DATA_SPLIT)[1]); }
-				 * else {
-				 * 
-				 * // getting key from excel sheet and find value against // key
-				 * from config.properties file data =
-				 * CONFIG.getProperty(currentTestSuiteXLS.getCellData(
-				 * Constants.TEST_STEPS_SHEET, Constants.DATA,
-				 * currentTestStepID));
-				 * 
-				 * }
-				 * 
-				 * // getting the key from excel sheet and value against the //
-				 * key will be fetched by the keyword object =
-				 * currentTestSuiteXLS.getCellData(Constants. TEST_STEPS_SHEET,
-				 * Constants.OBJECT, currentTestStepID);
-				 */
-
-				/*
-				 * if
-				 * (currentTestSuiteXLS.getCellData(Constants.TEST_SUITE_SHEET,
-				 * Constants.CLASS, currentSuiteID)
-				 * .equals(Constants.KEYWORDCLASS)) {
-				 * 
-				 * execute.executeKeyword(test, currentTestSuite,
-				 * currentTestSuiteXLS);
-				 * 
-				 * }else if(currentTestSuiteXLS.getCellData(Constants.
-				 * TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
-				 * .equals(Constants.PREREQUISITESCLASS)){
-				 * 
-				 * }else if(currentTestSuiteXLS.getCellData(Constants.
-				 * TEST_SUITE_SHEET, Constants.CLASS, currentSuiteID)
-				 * .equals(Constants.APPLICATIONSPECIFICCLASS)){
-				 * 
-				 * }
-				 */
-
-				/*
-				 * currentKeyword = currentTestSuiteXLS.getCellData(Constants.
-				 * TEST_STEPS_SHEET, Constants.KEYWORD, currentTestStepID);
-				 * APP_LOGS.debug(currentKeyword);
-				 * 
-				 * // running loop to check if keyword exists in the // keyword
-				 * // class for (int i = 0; i < methodKeywords.length; i++) {
-				 * 
-				 * if (methodKeywords[i].getName().equals(currentKeyword)) {
-				 * keyword_execution_result = (String)
-				 * methodKeywords[i].invoke(keywords, object, data);
-				 * APP_LOGS.debug(keyword_execution_result);
-				 * resultSet.add(keyword_execution_result);
-				 * 
-				 * // capturing screenshot if any test fails if
-				 * (keyword_execution_result.contains(Constants.KEYWORD_FAIL ))
-				 * { capturescreenShot_method.invoke(keywords,
-				 * currentTestModuleID + "_" + currentTestSuite + "_" + "_TS" +
-				 * (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
-				 * keyword_execution_result);
-				 * 
-				 * // adding screenshot if test fails test.log(Status.FAIL,
-				 * keyword_execution_result + test.addScreenCaptureFromPath(
-				 * System.getProperty("user.dir") + "//screenshots//" +
-				 * currentTestModuleID + "_" + currentTestSuite + "_" + "_TS" +
-				 * (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1) +
-				 * ".jpg"));
-				 * 
-				 * } else { test.log(Status.PASS, keyword_execution_result); }
-				 * 
-				 * } } } } else { // creating enty in report for skipped test
-				 * step test.log(Status.SKIP,
-				 * currentTestSuiteXLS.getCellData(Constants. TEST_STEPS_SHEET,
-				 * "Test Step Desc", currentTestStepID)); } }
-				 */
+				
 
 			}
 		}
 	}
 }
 
-/*
- * public void createXLSReport() {
- * 
- * String colName = Constants.RESULT + (currentTestDataSetID - 1) ; boolean
- * isColExist = false;
- * 
- * for (int c = 0; c <
- * currentTestSuiteXLS.getColumnCount(Constants.TEST_STEPS_SHEET); c++) { if
- * (currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, c,
- * 1).equals(colName)) { isColExist = true; break; } }
- * 
- * if (!isColExist) currentTestSuiteXLS.addColumn(Constants.TEST_STEPS_SHEET,
- * colName); int index = 0; for (int i = 2; i <=
- * currentTestSuiteXLS.getRowCount(Constants.TEST_STEPS_SHEET); i++) {
- * 
- * if (currentTestSuite
- * .equals(currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET,
- * Constants.TCID, i))) { if
- * (currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET,
- * Constants.RUNMODE, i) .equals(Constants.RUNMODE_YES)) { if (resultSet.size()
- * == 0) currentTestSuiteXLS.setCellData(Constants.TEST_STEPS_SHEET, colName, i,
- * Constants.KEYWORD_SKIP); else
- * currentTestSuiteXLS.setCellData(Constants.TEST_STEPS_SHEET, colName, i,
- * resultSet.get(index)); index++; } }
- * 
- * }
- * 
- * if (resultSet.size() == 0) { // skip
- * currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT,
- * currentTestDataSetID, Constants.KEYWORD_SKIP); return; } else { for (int i =
- * 0; i < resultSet.size(); i++) { if
- * (!resultSet.get(i).equals(Constants.KEYWORD_PASS)) {
- * currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT,
- * currentTestDataSetID, resultSet.get(i)); return; } } }
- * currentTestSuiteXLS.setCellData(currentTestSuite, Constants.RESULT,
- * currentTestDataSetID, Constants.KEYWORD_PASS);
- * 
- * }
- */

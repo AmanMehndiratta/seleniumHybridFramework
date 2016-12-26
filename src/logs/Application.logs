@@ -1,78 +1,78 @@
-23/12/2016 15:58:59 devpinoyLogger Hello
-23/12/2016 15:58:59 devpinoyLogger Loading Module Excel Sheet
-23/12/2016 15:59:00 devpinoyLogger Checking the Runmode of Module
-23/12/2016 15:59:00 devpinoyLogger TM001--Y
-23/12/2016 15:59:00 devpinoyLogger Executing Module Add_Appointment_Excel
-23/12/2016 15:59:00 devpinoyLogger Properties loaded. Starting testing
-23/12/2016 15:59:00 devpinoyLogger Intialize Suite xlsx
-23/12/2016 15:59:01 devpinoyLogger TC001 -- Y
-23/12/2016 15:59:01 devpinoyLogger ******Executing the Suite******TC001
-23/12/2016 15:59:01 devpinoyLogger TC001 -- Y
-23/12/2016 15:59:01 devpinoyLogger Executing the test step -> TC001
-23/12/2016 15:59:01 devpinoyLogger Iteration number 1
-23/12/2016 15:59:01 devpinoyLogger openBrowser
-23/12/2016 15:59:01 devpinoyLogger Opening browser
-23/12/2016 15:59:09 devpinoyLogger Pass -- Browser Opened
-23/12/2016 15:59:09 devpinoyLogger navigate
-23/12/2016 15:59:09 devpinoyLogger Navigating to URL
-23/12/2016 15:59:14 devpinoyLogger Pass -- Navigate to url
-23/12/2016 15:59:14 devpinoyLogger writeInInput
-23/12/2016 15:59:14 devpinoyLogger Writing in text box
-23/12/2016 15:59:14 devpinoyLogger Pass -- Wrote in input field
-23/12/2016 15:59:14 devpinoyLogger writeInInput
-23/12/2016 15:59:14 devpinoyLogger Writing in text box
-23/12/2016 15:59:15 devpinoyLogger Pass -- Wrote in input field
-23/12/2016 15:59:15 devpinoyLogger clickButton
-23/12/2016 15:59:15 devpinoyLogger Clicking on Button
-23/12/2016 15:59:16 devpinoyLogger Pass -- Button Clicked
-23/12/2016 15:59:16 devpinoyLogger waitForPageLoad
-23/12/2016 15:59:16 devpinoyLogger waiting for element to load
-23/12/2016 15:59:16 devpinoyLogger Pass -- Waited for page load
-23/12/2016 15:59:16 devpinoyLogger clickButton
-23/12/2016 15:59:16 devpinoyLogger TC002 -- Y
-23/12/2016 15:59:16 devpinoyLogger ******Executing the Suite******TC002
-23/12/2016 15:59:16 devpinoyLogger TC002 -- Y
-23/12/2016 15:59:16 devpinoyLogger Executing the test step -> TC002
-23/12/2016 15:59:16 devpinoyLogger Iteration number 1
-23/12/2016 15:59:16 devpinoyLogger verifyText
-23/12/2016 15:59:16 devpinoyLogger Verifying the text
-23/12/2016 15:59:26 devpinoyLogger Fail Object not found Unable to locate element: {"method":"xpath","selector":".//*[@id='todayAppointmentsContainer']/div[1]/h2"}
-Command duration or timeout: 10.06 seconds
+25/12/2016 01:50:30 devpinoyLogger Hello
+25/12/2016 01:50:30 devpinoyLogger Loading Module Excel Sheet
+25/12/2016 01:50:31 devpinoyLogger Checking the Runmode of Module
+25/12/2016 01:50:31 devpinoyLogger TM001--Y
+25/12/2016 01:50:31 devpinoyLogger Executing Module Add_Appointment_Excel
+25/12/2016 01:50:31 devpinoyLogger Properties loaded. Starting testing
+25/12/2016 01:50:31 devpinoyLogger Intialize Suite xlsx
+25/12/2016 01:50:31 devpinoyLogger TC001 -- Y
+25/12/2016 01:50:31 devpinoyLogger ******Executing the Suite******TC001
+25/12/2016 01:50:31 devpinoyLogger TC001 -- Y
+25/12/2016 01:50:31 devpinoyLogger Executing the test step -> TC001
+25/12/2016 01:50:31 devpinoyLogger Iteration number 1
+25/12/2016 01:50:31 devpinoyLogger openBrowser
+25/12/2016 01:50:31 devpinoyLogger Opening browser
+25/12/2016 01:50:42 devpinoyLogger Pass -- Browser Opened
+25/12/2016 01:50:42 devpinoyLogger navigate
+25/12/2016 01:50:42 devpinoyLogger Navigating to URL
+25/12/2016 01:50:54 devpinoyLogger Pass -- Navigate to url
+25/12/2016 01:50:54 devpinoyLogger writeInInput
+25/12/2016 01:50:54 devpinoyLogger Writing in text box
+25/12/2016 01:50:54 devpinoyLogger Pass -- Wrote in input field
+25/12/2016 01:50:54 devpinoyLogger writeInInput
+25/12/2016 01:50:54 devpinoyLogger Writing in text box
+25/12/2016 01:50:54 devpinoyLogger Pass -- Wrote in input field
+25/12/2016 01:50:54 devpinoyLogger clickButton
+25/12/2016 01:50:54 devpinoyLogger Clicking on Button
+25/12/2016 01:50:56 devpinoyLogger Pass -- Button Clicked
+25/12/2016 01:50:56 devpinoyLogger waitForPageLoad
+25/12/2016 01:50:56 devpinoyLogger waiting for element to load
+25/12/2016 01:50:56 devpinoyLogger Pass -- Waited for page load
+25/12/2016 01:50:56 devpinoyLogger clickButton
+25/12/2016 01:50:56 devpinoyLogger TC002 -- Y
+25/12/2016 01:50:56 devpinoyLogger ******Executing the Suite******TC002
+25/12/2016 01:50:56 devpinoyLogger TC002 -- Y
+25/12/2016 01:50:56 devpinoyLogger Executing the test step -> TC002
+25/12/2016 01:50:56 devpinoyLogger Iteration number 1
+25/12/2016 01:50:56 devpinoyLogger verifyText
+25/12/2016 01:50:56 devpinoyLogger Verifying the text
+25/12/2016 01:51:06 devpinoyLogger Fail Object not found Unable to locate element: {"method":"xpath","selector":".//*[@id='todayAppointmentsContainer']/div[1]/h2"}
+Command duration or timeout: 10.10 seconds
 For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
 Build info: version: '2.53.1', revision: 'a36b8b1', time: '2016-06-30 17:32:46'
-System info: host: 'DESKTOP-6G2G9OB', ip: '192.168.1.203', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '1.8.0_111'
+System info: host: 'DESKTOP-6G2G9OB', ip: '192.168.1.8', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '1.8.0_111'
 Driver info: org.openqa.selenium.firefox.FirefoxDriver
 Capabilities [{applicationCacheEnabled=true, rotatable=false, handlesAlerts=true, databaseEnabled=true, version=47.0.1, platform=WINDOWS, nativeEvents=false, acceptSslCerts=true, webStorageEnabled=true, locationContextEnabled=true, browserName=firefox, takesScreenshot=true, javascriptEnabled=true, cssSelectorsEnabled=true}]
-Session ID: b9a76485-f222-4feb-8023-3d277e3ab0be
+Session ID: 67f3db7c-af1d-41f3-bc2a-4fd6abe2cc12
 *** Element info: {Using=xpath, value=.//*[@id='todayAppointmentsContainer']/div[1]/h2}
-23/12/2016 15:59:26 devpinoyLogger TC003 -- N
-23/12/2016 15:59:26 devpinoyLogger TC004 -- N
-23/12/2016 15:59:27 devpinoyLogger Checking the Runmode of Module
-23/12/2016 15:59:27 devpinoyLogger TM002--N
-23/12/2016 15:59:27 devpinoyLogger Checking the Runmode of Module
-23/12/2016 15:59:27 devpinoyLogger TM003--Y
-23/12/2016 15:59:27 devpinoyLogger Executing Module Load_Facebook_Excel
-23/12/2016 15:59:27 devpinoyLogger Properties loaded. Starting testing
-23/12/2016 15:59:27 devpinoyLogger Intialize Suite xlsx
-23/12/2016 15:59:27 devpinoyLogger TC001 -- Y
-23/12/2016 15:59:27 devpinoyLogger ******Executing the Suite******TC001
-23/12/2016 15:59:27 devpinoyLogger TC001 -- Y
-23/12/2016 15:59:27 devpinoyLogger Executing the test step -> TC001
-23/12/2016 15:59:27 devpinoyLogger Iteration number 1
-23/12/2016 15:59:27 devpinoyLogger loginIntoEMR
-23/12/2016 15:59:27 devpinoyLogger Navigating to URL
-23/12/2016 15:59:30 devpinoyLogger waiting for element to load
-23/12/2016 15:59:31 devpinoyLogger Writing in text box
-23/12/2016 15:59:31 devpinoyLogger Writing in text box
-23/12/2016 15:59:31 devpinoyLogger Clicking on Button
-23/12/2016 15:59:35 devpinoyLogger Pass -- Logged into EMR
-23/12/2016 15:59:35 devpinoyLogger TC002 -- Y
-23/12/2016 15:59:35 devpinoyLogger ******Executing the Suite******TC002
-23/12/2016 15:59:35 devpinoyLogger TC002 -- Y
-23/12/2016 15:59:35 devpinoyLogger Executing the test step -> TC002
-23/12/2016 15:59:35 devpinoyLogger Iteration number 1
-23/12/2016 15:59:35 devpinoyLogger closeBroswer
-23/12/2016 15:59:35 devpinoyLogger Closing the browser
-23/12/2016 15:59:37 devpinoyLogger Pass -- Browser Closed
-23/12/2016 15:59:37 devpinoyLogger TC003 -- N
-23/12/2016 15:59:37 devpinoyLogger TC004 -- N
+25/12/2016 01:51:07 devpinoyLogger TC003 -- N
+25/12/2016 01:51:07 devpinoyLogger TC004 -- N
+25/12/2016 01:51:07 devpinoyLogger Checking the Runmode of Module
+25/12/2016 01:51:07 devpinoyLogger TM002--N
+25/12/2016 01:51:08 devpinoyLogger Checking the Runmode of Module
+25/12/2016 01:51:08 devpinoyLogger TM003--Y
+25/12/2016 01:51:08 devpinoyLogger Executing Module Load_Facebook_Excel
+25/12/2016 01:51:08 devpinoyLogger Properties loaded. Starting testing
+25/12/2016 01:51:08 devpinoyLogger Intialize Suite xlsx
+25/12/2016 01:51:08 devpinoyLogger TC001 -- Y
+25/12/2016 01:51:08 devpinoyLogger ******Executing the Suite******TC001
+25/12/2016 01:51:08 devpinoyLogger TC001 -- Y
+25/12/2016 01:51:08 devpinoyLogger Executing the test step -> TC001
+25/12/2016 01:51:08 devpinoyLogger Iteration number 1
+25/12/2016 01:51:08 devpinoyLogger loginIntoEMR
+25/12/2016 01:51:08 devpinoyLogger Navigating to URL
+25/12/2016 01:51:12 devpinoyLogger waiting for element to load
+25/12/2016 01:51:17 devpinoyLogger Writing in text box
+25/12/2016 01:51:17 devpinoyLogger Writing in text box
+25/12/2016 01:51:18 devpinoyLogger Clicking on Button
+25/12/2016 01:51:36 devpinoyLogger Pass -- Logged into EMR
+25/12/2016 01:51:36 devpinoyLogger TC002 -- Y
+25/12/2016 01:51:36 devpinoyLogger ******Executing the Suite******TC002
+25/12/2016 01:51:36 devpinoyLogger TC002 -- Y
+25/12/2016 01:51:36 devpinoyLogger Executing the test step -> TC002
+25/12/2016 01:51:36 devpinoyLogger Iteration number 1
+25/12/2016 01:51:36 devpinoyLogger closeBroswer
+25/12/2016 01:51:36 devpinoyLogger Closing the browser
+25/12/2016 01:51:37 devpinoyLogger Pass -- Browser Closed
+25/12/2016 01:51:37 devpinoyLogger TC003 -- N
+25/12/2016 01:51:37 devpinoyLogger TC004 -- N

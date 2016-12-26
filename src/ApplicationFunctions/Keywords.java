@@ -1,30 +1,18 @@
 package ApplicationFunctions;
 
-import Constants.ConstantPaths;
 import Constants.Constants;
 
 import static ApplicationFunctions.DriverScript.APP_LOGS;
 import static ApplicationFunctions.DriverScript.CONFIG;
 import static ApplicationFunctions.DriverScript.OR;
-import static ApplicationFunctions.DriverScript.currentTestCaseName;
-import static ApplicationFunctions.DriverScript.currentTestDataSetID;
-import static ApplicationFunctions.DriverScript.currentTestSuiteXLS;
-
 import java.io.File;
 import java.io.IOException;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.By.ByXPath;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -33,9 +21,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.support.ui.Select;
-
-import sun.util.resources.CalendarData;
 
 public class Keywords {
 
@@ -500,7 +485,7 @@ public class Keywords {
 	 * APPLICATION SPECIFIC KEYWORDS
 	 ********************************/
 
-	public String validateLogin(String object, String data) {
+/*	public String validateLogin(String object, String data) {
 		// object of the current test XLS
 		// name of my current test case
 		System.out.println("xxxxxxxxxxxxxxxxxxxxx");
@@ -532,9 +517,9 @@ public class Keywords {
 			return Constants.KEYWORD_PASS;
 		else
 			return Constants.KEYWORD_FAIL;
-	}
+	}*/
 
-	public String verifyLaptops(String object, String data) {
+	/*public String verifyLaptops(String object, String data) {
 		APP_LOGS.debug("Verifying the laptops in app");
 		// brand
 		String brand = currentTestSuiteXLS.getCellData(currentTestCaseName, "Brand", currentTestDataSetID)
@@ -551,7 +536,7 @@ public class Keywords {
 		}
 
 		return Constants.KEYWORD_PASS;
-	}
+	}*/
 
 	public String verifySearchResults(String object, String data) {
 		APP_LOGS.debug("Verifying the Search Results");
