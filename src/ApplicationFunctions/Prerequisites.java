@@ -4,9 +4,13 @@ import static ApplicationFunctions.DriverScript.APP_LOGS;
 
 import org.openqa.selenium.WebDriver;
 
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+
 import Constants.ConstantPaths;
 import Constants.ConstantVerificationElements;
 import Constants.Constants;
+import ReusableFunctions.Keywords;
 
 public class Prerequisites extends Keywords{
 
@@ -20,14 +24,45 @@ public class Prerequisites extends Keywords{
 	
 	Keywords keyword = new Keywords();
 	
-	public String loginIntoEMR(String data, String object, String url,String Username, String Password){
-		keyword.navigate(object, url);
+	public String loginIntoEMR(String data, String object, String url,String Username, String Password, ExtentTest parentTest){
+		ExtentTest childTest = parentTest.createNode("Login in to EMR", "Logging into emr without logout from frontend");
 		
-		keyword.waitForPageLoad(object, "50000");
+		String nav = keyword.navigate(object, url);
+		if(nav.contains("Fail")){
+			childTest.log(Status.FAIL, nav);
+		}else{
+			childTest.log(Status.PASS, nav);
+		}
 		
-		keyword.writeInInput("emr_username_login_input", Username);
-		keyword.writeInInput("emr_passwd_login_input", "123456");
-		keyword.clickButton("emr_button_login", data);
+		
+		String wait = keyword.waitForPageLoad(object, "50000");
+		if(wait.contains("Fail")){
+			childTest.log(Status.FAIL, wait);
+		}else{
+			childTest.log(Status.PASS, wait);
+		}
+		
+		
+		String enterUsername = keyword.writeInInput("emr_username_login_input", Username);
+		if(enterUsername.contains("Fail")){
+			childTest.log(Status.FAIL, enterUsername);
+		}else{
+			childTest.log(Status.PASS, enterUsername);
+		}
+		
+		String enterPassword = keyword.writeInInput("emr_passwd_login_input", "123456");
+		if(enterPassword.contains("Fail")){
+			childTest.log(Status.FAIL, enterPassword);
+		}else{
+			childTest.log(Status.PASS, enterPassword);
+		}
+		
+		String loginButton = keyword.clickButton("emr_button_login", data);
+		if(loginButton.contains("Fail")){
+			childTest.log(Status.FAIL, loginButton);
+		}else{
+			childTest.log(Status.PASS, loginButton);
+		}
 		
 		return Constants.KEYWORD_PASS + " -- Logged into EMR";
 	}

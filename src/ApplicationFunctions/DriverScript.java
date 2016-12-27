@@ -60,7 +60,7 @@ public class DriverScript {
 	public static Method methodApplicationSpecific[];
 	public static Method capturescreenShot_method;
 
-	public static Keywords keywords;
+	public static ReusableFunctions.Keywords keywords;
 	public static Prerequisites prerequisites;
 	public static ApplicationSpecific applicationSpecific;
 
@@ -72,11 +72,8 @@ public class DriverScript {
 
 	Execute execute = new Execute();
 
-	
-
-	
 	public DriverScript() throws NoSuchMethodException, SecurityException {
-		keywords = new Keywords();
+		keywords = new ReusableFunctions.Keywords();
 		prerequisites = new Prerequisites();
 		applicationSpecific = new ApplicationSpecific();
 
@@ -141,16 +138,14 @@ public class DriverScript {
 
 			if (automationModuleXLSX.getCellData(Constants.TEST_MODULE_SHEET, Constants.RUNMODE, testModuleID)
 					.equals(Constants.RUNMODE_YES)) {
-				
-				
+
 				ExtentReportConfigrator report = new ExtentReportConfigrator();
 				report.generateReport(currentTestModuleName);
-				
-				report.configureReport();
-				
+
+				report.configureReport(currentTestModuleName);
+
 				report.reportUserInfo(automationModuleXLSX);
 
-				
 				APP_LOGS.debug("Executing Module " + currentTestModuleExcelKey);
 				APP_LOGS.debug("Properties loaded. Starting testing");
 				APP_LOGS.debug("Intialize Suite xlsx");
@@ -175,10 +170,9 @@ public class DriverScript {
 					if (suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, Constants.RUNMODE, currentSuiteID)
 							.equals(Constants.RUNMODE_YES)) {
 
-						report.createTest(currentSuiteID, suiteXLS);
+						ExtentTest parentTest = report.createTest(currentSuiteID, suiteXLS);
 						report.assignTestCategory(currentSuiteID, suiteXLS);
 						report.assignTestAuthor(automationModuleXLSX, testModuleID);
-						
 
 						// printing the test suite which is being executing
 						APP_LOGS.debug("******Executing the Suite******" + suiteXLS
@@ -200,14 +194,14 @@ public class DriverScript {
 							APP_LOGS.debug("Iteration number " + (currentTestDataSetID - 1));
 
 							// running executeKeyword function
-							processKeywords(report);
+							processKeywords(report, parentTest);
 
 							// createXLSReport();
 
 						} else {
 
 							resultSet = new ArrayList<String>();
-							processKeywords(report);
+							processKeywords(report, parentTest);
 							// createXLSReport();
 						}
 					} else {
@@ -222,14 +216,14 @@ public class DriverScript {
 
 				report.flush();
 				report = null;
-				
+
 			}
 
 		}
 	}
 
-	public void processKeywords(ExtentReportConfigrator report) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NoSuchMethodException, SecurityException, IOException {
+	public void processKeywords(ExtentReportConfigrator report, ExtentTest parentTest) throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
 
 		// getting the total row count of testCaseSheet
 		for (currentTestStepID = 2; currentTestStepID <= currentTestSuiteXLS
@@ -245,10 +239,15 @@ public class DriverScript {
 				currentKeyword = currentTestSuiteXLS.getCellData(Constants.TEST_STEPS_SHEET, Constants.KEYWORD,
 						currentTestStepID);
 				APP_LOGS.debug(currentKeyword);
-
+				
+				
+				
+				
 				for (int i = 0; i < methodKeywords.length; i++) {
 
 					if (methodKeywords[i].getName().equals(currentKeyword)) {
+						
+						
 						execute.executeKeyword(currentTestSuite, currentTestSuiteXLS, currentTestStepID,
 								currentTestDataSetID, CONFIG, methodKeywords, capturescreenShot_method, APP_LOGS,
 								resultSet, keywords, currentKeyword, currentTestModuleID, report);
@@ -257,10 +256,10 @@ public class DriverScript {
 						for (int j = 0; j < methodPrerequisites.length; j++) {
 
 							if (methodPrerequisites[i].getName().equals(currentKeyword)) {
-								execute.ExecutePrerequisites(currentTestSuite, currentTestSuiteXLS,
-										currentTestStepID, currentTestDataSetID, CONFIG, methodPrerequisites,
-										capturescreenShot_method, APP_LOGS, resultSet, prerequisites, currentKeyword,
-										currentTestModuleID, report);
+								execute.ExecutePrerequisites(currentTestSuite, currentTestSuiteXLS, currentTestStepID,
+										currentTestDataSetID, CONFIG, methodPrerequisites, capturescreenShot_method,
+										APP_LOGS, resultSet, prerequisites, currentKeyword, currentTestModuleID,
+										report, parentTest);
 								break;
 							}
 						}
@@ -276,10 +275,7 @@ public class DriverScript {
 					}
 				}
 
-				
-
 			}
 		}
 	}
 }
-

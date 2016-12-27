@@ -1,4 +1,6 @@
-package ApplicationFunctions;
+package ReusableFunctions;
+
+
 
 import Constants.Constants;
 
@@ -22,6 +24,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
+import ApplicationFunctions.Prerequisites;
+
 public class Keywords {
 
 	public static WebDriver driver;
@@ -29,7 +33,7 @@ public class Keywords {
 
 	// to open browser
 	public String openBrowser(String object, String data) {
-		DriverScript.APP_LOGS.debug("Opening browser");
+		APP_LOGS.debug("Opening browser");
 		try {
 			if (data.equals("Mozilla"))
 				driver = new FirefoxDriver();
@@ -506,12 +510,9 @@ public class Keywords {
 					else
 						return Constants.KEYWORD_PASS;
 				}
-
 			} catch (Exception e) {
-
 			}
 		}
-
 		// check for page title
 		if (data_flag.equals(Constants.POSITIVE_DATA))
 			return Constants.KEYWORD_PASS;
@@ -532,9 +533,7 @@ public class Keywords {
 			if (text.indexOf(brand) == -1) {
 				return Constants.KEYWORD_FAIL + " Brand not there in - " + text;
 			}
-
 		}
-
 		return Constants.KEYWORD_PASS;
 	}*/
 

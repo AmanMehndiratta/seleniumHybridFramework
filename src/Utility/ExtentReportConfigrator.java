@@ -32,11 +32,11 @@ public class ExtentReportConfigrator {
 				System.getProperty("user.dir") + "\\test-output\\" + currentTestModuleName + ".html");
 
 		extent.attachReporter(htmlReporter);
-
+	
 		htmlReporter.setAppendExisting(false);
 	}
 
-	public void configureReport() {
+	public void configureReport(String currentTestModuleName) {
 
 		List<Status> statusHierarchy = Arrays.asList(Status.FATAL, Status.FAIL, Status.ERROR, Status.WARNING,
 				Status.SKIP, Status.PASS, Status.INFO);
@@ -46,8 +46,9 @@ public class ExtentReportConfigrator {
 		htmlReporter.config().setReportName("PRM Automation");
 		htmlReporter.config().setTestViewChartLocation(ChartLocation.TOP);
 		htmlReporter.config().setTheme(Theme.STANDARD);
-		htmlReporter.config().setReportName("Today's Report");
+		htmlReporter.config().setReportName("Automation Test Report : "+currentTestModuleName);
 		extent.config().statusConfigurator().setStatusHierarchy(statusHierarchy);
+		
 	}
 
 	public void reportUserInfo(Xls_Reader automationModuleXLSX) throws UnknownHostException {
@@ -101,6 +102,7 @@ public class ExtentReportConfigrator {
 		// starting test for extent report
 		test = extent.createTest(suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Name", currentSuiteID),
 				suiteXLS.getCellData(Constants.TEST_SUITE_SHEET, "Desc", currentSuiteID));
+		
 		return test;
 	}
 

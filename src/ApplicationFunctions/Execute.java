@@ -21,6 +21,7 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;*/
 
 import Constants.Constants;
+import ReusableFunctions.Keywords;
 import Utility.ExtentReportConfigrator;
 import Utility.Xls_Reader;
 import org.apache.log4j.Logger;
@@ -113,7 +114,7 @@ public class Execute {
 	public void ExecutePrerequisites(String currentTestSuite, Xls_Reader currentTestSuiteXLS, int currentTestStepID,
 			int currentTestDataSetID, Properties CONFIG, Method methodPrerequisites[], Method capturescreenShot_method,
 			Logger APP_LOGS, ArrayList<String> resultSet, Prerequisites prerequisites, String currentKeyword,
-			String currentTestModuleID, ExtentReportConfigrator report)
+			String currentTestModuleID, ExtentReportConfigrator report, ExtentTest parentTest)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 
 		if (currentTestSuiteXLS.getCellData(Constants.TEST_CASES_SHEET, Constants.RUNMODE, currentTestStepID)
@@ -160,7 +161,7 @@ public class Execute {
 
 						if (methodPrerequisites[i].getName().equals(currentKeyword)) {
 							keyword_execution_result = (String) methodPrerequisites[i].invoke(prerequisites, object,
-									data, url, Username, Password);
+									data, url, Username, Password, parentTest);
 							APP_LOGS.debug(keyword_execution_result);
 							resultSet.add(keyword_execution_result);
 
@@ -169,7 +170,7 @@ public class Execute {
 								capturescreenShot_method.invoke(prerequisites,
 										currentTestModuleID + "_" + currentTestSuite + "_" + "_TS"
 												+ (currentTestStepID - 1) + "_" + (currentTestDataSetID - 1),
-										keyword_execution_result);
+										keyword_execution_result, parentTest);
 
 								report.testFail(keyword_execution_result, currentTestModuleID, currentTestSuite,
 										currentTestStepID, currentTestDataSetID);
